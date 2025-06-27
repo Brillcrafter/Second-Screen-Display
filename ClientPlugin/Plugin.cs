@@ -5,6 +5,7 @@ using ClientPlugin.Settings.Layouts;
 using HarmonyLib;
 using Sandbox.Graphics.GUI;
 using VRage.Plugins;
+using Secondary_Window;
 
 namespace ClientPlugin;
 
@@ -47,6 +48,8 @@ public class Plugin : IPlugin, IDisposable
     public void Update()
     {
         // TODO: Put your update code here. It is called on every simulation frame!
+        var secondaryWindow = new SecondaryWindow();
+        secondaryWindow.Show();
     }
 
     // ReSharper disable once UnusedMember.Global
