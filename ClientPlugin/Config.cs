@@ -84,33 +84,7 @@ namespace ClientPlugin
             get => color;
             set => SetField(ref color, value);
         }
-
-        [Color(hasAlpha: true, description: "RGBA color")]
-        public Color ColorWithAlpha
-        {
-            get => colorWithAlpha;
-            set => SetField(ref colorWithAlpha, value);
-        }
-
-        [Keybind(description: "Keybind Tooltip - Unbind by right clicking the button")]
-        public Binding Keybind
-        {
-            get => keybind;
-            set => SetField(ref keybind, value);
-        }
-
-        [Button(description: "Button Tooltip")]
-        public void Button()
-        {
-            MyGuiSandbox.AddScreen(MyGuiSandbox.CreateMessageBox(
-                MyMessageBoxStyleEnum.Info,
-                buttonType: MyMessageBoxButtonsType.OK,
-                messageText: new StringBuilder("You clicked me!"),
-                messageCaption: new StringBuilder("Custom Button Function"),
-                size: new Vector2(0.6f, 0.5f)
-            ));
-        }
-
+        
         #endregion
 
         #region Property change notification bilerplate

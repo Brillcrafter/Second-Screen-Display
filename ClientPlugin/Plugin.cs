@@ -5,7 +5,6 @@ using ClientPlugin.Settings.Layouts;
 using HarmonyLib;
 using Sandbox.Graphics.GUI;
 using VRage.Plugins;
-using Secondary_Window;
 
 namespace ClientPlugin;
 
@@ -15,6 +14,7 @@ public class Plugin : IPlugin, IDisposable
     public const string Name = "SecondScreenDisplay";
     public static Plugin Instance { get; private set; }
     private SettingsGenerator _settingsGenerator;
+    private bool _isLoaded;
     /*
     what do I need to do?
     MVP is displaying stuff on an LCD in another window, preserving the location used for hudlcd.
@@ -48,8 +48,9 @@ public class Plugin : IPlugin, IDisposable
     public void Update()
     {
         // TODO: Put your update code here. It is called on every simulation frame!
-        var secondaryWindow = new SecondaryWindow();
-        secondaryWindow.Show();
+        if (_isLoaded) return;
+        SecondWindowThread.CreateThread();
+        _isLoaded = true;
     }
 
     // ReSharper disable once UnusedMember.Global
