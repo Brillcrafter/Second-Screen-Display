@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using ClientPlugin.Settings;
 using ClientPlugin.Settings.Layouts;
@@ -19,6 +20,8 @@ public class Plugin: IPlugin
     private bool _isLoaded;
     public bool InitPatch;
     public static Harmony HarmonyPatcher { get; private set; }
+    
+    public static List<LcdDisplay> LcdDisplays = [];
     /*
     what do I need to do?
     MVP is displaying stuff on an LCD in another window, preserving the location used for hudlcd.

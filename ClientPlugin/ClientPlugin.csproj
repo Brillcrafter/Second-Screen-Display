@@ -637,6 +637,7 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="HudLCDPatch.cs" />
+    <Compile Include="LcdDisplay.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecondWindow.xaml.cs" />
