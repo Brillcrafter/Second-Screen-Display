@@ -14,7 +14,7 @@ public class LcdDisplay
 
     public Vector2D thisTextPosition;
 
-    public string thisTextcolour;
+    public Color thisTextcolour;
 
     public bool thisTextFontShadow;
     
@@ -25,5 +25,13 @@ public class LcdDisplay
     public LcdDisplay(IMyTextPanel block)
     {
         Block = block;
+    }
+
+    public static Vector2D ConvertToCanvasPos(Vector2D position)
+    {
+        var x = (position.X + 1)/2 * Plugin.Instance.WindowWidth;
+        var y = (position.Y + 1)/2 * Plugin.Instance.WindowHeight;
+        //now 0,0 is bottom left instead of center
+        return new Vector2D(x, y);
     }
 }

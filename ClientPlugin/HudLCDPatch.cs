@@ -5,6 +5,7 @@ using HarmonyLib;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces;
+using VRage.Utils;
 using VRageRender;
 
 namespace ClientPlugin;
@@ -31,7 +32,7 @@ public class HudLcdPatch
         Instance = new HudLcdPatch();
     }
     
-    public void Start()
+    public static void Start()
     {
         foreach (var kv in MyScriptManager.Static.Scripts)
         {
@@ -54,10 +55,29 @@ public class HudLcdPatch
                 Plugin.HarmonyPatcher.Patch(m, hudLcdPreFix);
                 Plugin.Instance.InitPatch = true;
             }
+            else MyLog.Default.Error("HudLcdPatch: UpdateValues method not found");
+            var hudLcdOnClosePrefix = new HarmonyMethod(typeof(HudLcdPatch), nameof(OnHudLcdClose));
+            var method = tComponent.GetMethod("OnHudLcdClose");
+            if (m != null)
+            {
+                Plugin.HarmonyPatcher.Patch(method, hudLcdOnClosePrefix);
+            }
+            else MyLog.Default.Error("HudLcdPatch: Close method not found");
         }
     }
 
-    public static bool UpdateValues(ref bool __result, ref IMyTextPanel ___thisTextPanel)
+    public static bool OnHudLcdClose(ref IMyTextPanel ___thisTextPanel)
+    {
+        //this is called when the hudlcd is closed, so we need to remove it from the list
+        var entityId = ___thisTextPanel.EntityId;
+        SecondWindowThread.WpfWindow.Dispatcher.Invoke(() =>
+        {
+            SecondWindow.RemoveLcdFromList(entityId);
+        });
+        return true; //still run the origional method
+    }
+
+    public static bool UpdateValues(ref bool __result, ref IMyTextPanel ___thisTextPanel, ref bool ___IsControlled)
     {
         string config;
         if (___thisTextPanel.GetPublicTitle() != null &&
@@ -72,11 +92,11 @@ public class HudLcdPatch
         else
         {
             // no hudlcd config found.
-            return true;
+            return false;
         }
 
         LcdDisplay currentLcd = null;
-        foreach (var lcd in Plugin.LcdDisplays)
+        foreach (var lcd in SecondWindow.LcdDisplays)
         {
             if (lcd.Block.EntityId == ___thisTextPanel.EntityId)
             {
@@ -85,11 +105,12 @@ public class HudLcdPatch
             }
         }
 
+        var newLcd = false;
         if (currentLcd == null)
         {
             //create a new one
             currentLcd = new LcdDisplay(___thisTextPanel);
-            Plugin.LcdDisplays.Add(currentLcd);
+            newLcd = true;
         }
 
         currentLcd.thisTextScale = ___thisTextPanel.FontSize;
@@ -120,7 +141,9 @@ public class HudLcdPatch
                                 currentLcd.thisTextScale = Trygetdouble(rawconf[i], textScaleDefault);
                                 break;
                             case 4:
-                                currentLcd.thisTextcolour = "<color=" + rawconf[i].Trim() + ">";
+                                //currentLcd.thisTextcolour = "<color=" + rawconf[i].Trim() + ">";
+                                //going to remove support for colour defined in the config,
+                                //I don't think any script uses it
                                 break;
                             case 5:
                                 if (rawconf[i].Trim() == "1")
@@ -151,7 +174,7 @@ public class HudLcdPatch
                                 break;
                             case 4:
                                 var fontColor = ___thisTextPanel.GetValueColor("FontColor");
-                                currentLcd.thisTextcolour = $"<color={fontColor.R},{fontColor.G},{fontColor.B}>";
+                                currentLcd.thisTextcolour = fontColor;
                                 break;
                             case 5:
                                 currentLcd.thisTextFontShadow = false;
@@ -163,6 +186,12 @@ public class HudLcdPatch
                 break; // stop processing lines from Custom Data
             }
         }
+
+        if (newLcd)
+            SecondWindowThread.WpfWindow.Dispatcher.Invoke(() =>
+            {
+                SecondWindow.AddDisplayToList(currentLcd);
+            });
         //now to actually read the stuff from the LCD
         UpdateHudMessage(currentLcd);
         
@@ -175,6 +204,10 @@ public class HudLcdPatch
         currentLcd.LcdText ??= new StringBuilder(500);
         currentLcd.LcdText.Clear();
         currentLcd.Block.ReadText(currentLcd.LcdText, true);
+        SecondWindowThread.WpfWindow.Dispatcher.Invoke(() =>
+        {
+            SecondWindow.UpdateLcdList(currentLcd);
+        });
     }
     
     private static double Trygetdouble(string v, double defaultval)

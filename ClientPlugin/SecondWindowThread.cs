@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Windows;
 
 namespace ClientPlugin;
@@ -17,6 +18,5 @@ public class SecondWindowThread
         });
         wpfThread.SetApartmentState(ApartmentState.STA); // WPF requires STA threads
         wpfThread.Start();
-
     }
 }
