@@ -642,6 +642,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecondWindow.xaml.cs" />
     <Compile Include="SecondWindowThread.cs" />
+    <Compile Include="SessionComp.cs" />
     <Compile Include="Settings\ConfigStorage.cs" />
     <Compile Include="Settings\Elements\Button.cs" />
     <Compile Include="Settings\Elements\Checkbox.cs" />

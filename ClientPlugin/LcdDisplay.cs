@@ -29,8 +29,10 @@ public class LcdDisplay
 
     public static Vector2D ConvertToCanvasPos(Vector2D position)
     {
+        var width = Plugin.Instance.WindowWidth;
+        var height = Plugin.Instance.WindowHeight;
         var x = (position.X + 1)/2 * Plugin.Instance.WindowWidth;
-        var y = (position.Y + 1)/2 * Plugin.Instance.WindowHeight;
+        var y = (1 - (position.Y + 1)/2) * Plugin.Instance.WindowHeight;
         //now 0,0 is bottom left instead of center
         return new Vector2D(x, y);
     }

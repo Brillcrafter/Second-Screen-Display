@@ -49,18 +49,18 @@ public class HudLcdPatch
         if (tComponent != null)
         {
             HarmonyMethod hudLcdPreFix = new HarmonyMethod(typeof(HudLcdPatch), nameof(UpdateValues));
-            var m = tComponent.GetMethod("UpdateValues");
+            var m = tComponent.GetMethod("UpdateValues", BindingFlags.Instance | BindingFlags.NonPublic);
             if (m != null)
             {
                 Plugin.HarmonyPatcher.Patch(m, hudLcdPreFix);
-                Plugin.Instance.InitPatch = true;
             }
             else MyLog.Default.Error("HudLcdPatch: UpdateValues method not found");
             var hudLcdOnClosePrefix = new HarmonyMethod(typeof(HudLcdPatch), nameof(OnHudLcdClose));
-            var method = tComponent.GetMethod("OnHudLcdClose");
-            if (m != null)
+            var method = tComponent.GetMethod("Close", BindingFlags.Instance | BindingFlags.Public);
+            if (method != null)
             {
                 Plugin.HarmonyPatcher.Patch(method, hudLcdOnClosePrefix);
+				Plugin.Instance.InitPatch = true;
             }
             else MyLog.Default.Error("HudLcdPatch: Close method not found");
         }
@@ -77,7 +77,7 @@ public class HudLcdPatch
         return true; //still run the origional method
     }
 
-    public static bool UpdateValues(ref bool __result, ref IMyTextPanel ___thisTextPanel, ref bool ___IsControlled)
+    public static bool UpdateValues(ref bool __result, ref IMyTextPanel ___thisTextPanel)
     {
         string config;
         if (___thisTextPanel.GetPublicTitle() != null &&

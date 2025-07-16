@@ -8,6 +8,7 @@ using Sandbox.Game.World;
 using Sandbox.Graphics.GUI;
 using Sandbox.ModAPI;
 using VRage.Plugins;
+using VRage.Utils;
 
 namespace ClientPlugin;
 
@@ -24,7 +25,7 @@ public class Plugin: IPlugin
     public int WindowWidth = 1920;
     public int WindowHeight = 1080;
     
-    public bool IsControlled => MyAPIGateway.Session?.LocalHumanPlayer?.Controller?.ControlledEntity is IMyTerminalBlock;
+    bool IsControlled => MyAPIGateway.Session?.LocalHumanPlayer?.Controller?.ControlledEntity is IMyTerminalBlock;
 
     private int _counter;
     
@@ -51,6 +52,7 @@ public class Plugin: IPlugin
         // TODO: Put your one time initialization code here.
         HudLcdPatch.Instance = new HudLcdPatch();
         HarmonyPatcher = new Harmony(Name);
+        MyLog.Default.Info("Second Screen display Init Complete");
     }
 
     public void Dispose()
@@ -64,16 +66,16 @@ public class Plugin: IPlugin
     public void Update()
     {
         // TODO: Put your update code here. It is called on every simulation frame!
-        if (Instance._isLoaded) return;
-        SecondWindowThread.CreateThread();
-        Instance._isLoaded = true;
-        
+        if (!Instance._isLoaded)
+        {
+            SecondWindowThread.CreateThread();
+            Instance._isLoaded = true;  
+        }
         if (MyAPIGateway.Multiplayer == null || MySession.Static?.LocalCharacter == null || MyAPIGateway.Session == null)
         {
             return;
         }
         
-        if (!Instance.InitPatch){HudLcdPatch.Start();}
         
         if (Instance._counter == 10)
         {

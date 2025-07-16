@@ -23,11 +23,15 @@ public partial class SecondWindow
         InitializeComponent();
         var customFont = new FontFamily(new Uri("pack://application:,,,/SecondScreenDisplay;component/mywindow.xaml"),
             "./resources/#BigBlueTermPlus Nerd Font Mono");
-        Title = "My Window";
+        Title = "Second Screen Display";
         FontFamily = customFont;
         Width = Plugin.Instance.WindowWidth;
         Height = Plugin.Instance.WindowHeight;
-        _parentCanvas = new Canvas();
+        _parentCanvas = new Canvas
+        {
+            Width = Plugin.Instance.WindowWidth,
+            Height = Plugin.Instance.WindowHeight
+        };
         Content = _parentCanvas;
         FontSize = 12;
         Show();
@@ -63,6 +67,8 @@ public partial class SecondWindow
 
     public static void UpdateDisplay()
     {
+        var displays = LcdDisplays;
+        var displaysDictionary = _lcdDisplaysDictionary;
         //called every 10 frames, this is what will update stuff on the second window
         foreach (var lcd in LcdDisplays)
         {
@@ -79,7 +85,8 @@ public partial class SecondWindow
                     kv.Value.SetValue(Canvas.LeftProperty, canvasVector.X);
                     kv.Value.SetValue(Canvas.TopProperty, canvasVector.Y);
                     //scale
-                    kv.Value.FontSize = lcd.thisTextScale; //probably will need to scale this to match SE
+                    kv.Value.FontSize = 10;
+                    //kv.Value.FontSize = lcd.thisTextScale; //probably will need to scale this to match SE
                     //colour
                     var color = new Color //why do you have to use your own colour class keeen
                     {
@@ -115,7 +122,7 @@ public partial class SecondWindow
             }
         }
         
-        
+        var canvas = _parentCanvas;
         //MAKE SURE TO MAKE THIS MORE PERFORMANT!!!
         _parentCanvas.Children.Clear();
         foreach (var kv in _lcdDisplaysDictionary)
