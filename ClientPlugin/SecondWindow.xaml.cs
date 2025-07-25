@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using VRageMath;
@@ -9,123 +11,97 @@ namespace ClientPlugin;
 
 public partial class SecondWindow
 {
-    
-    public static List<LcdDisplay> LcdDisplays = [];
-    
     private static Canvas _parentCanvas;
     
-    //this stores the 
-    private static Dictionary<long, TextBox> _lcdDisplaysDictionary = new();
-    
+    //this stores the displayed text boxes
+    public static Dictionary<long, TextBox> LcdDisplaysDictionary = new();
     
     public SecondWindow()
     {
         InitializeComponent();
+        //Closed += OnWindowClosed;
         var customFont = new FontFamily(new Uri("pack://application:,,,/SecondScreenDisplay;component/mywindow.xaml"),
             "./resources/#BigBlueTermPlus Nerd Font Mono");
         Title = "Second Screen Display";
         FontFamily = customFont;
-        Width = Plugin.Instance.WindowWidth;
-        Height = Plugin.Instance.WindowHeight;
+        int.TryParse(Config.Current.SecondWindowWidth, out var secondWindowWidth);
+        int.TryParse(Config.Current.SecondWindowHeight, out var secondWindowHeight);
+        Width = secondWindowWidth;
+        Height = secondWindowHeight;
         _parentCanvas = new Canvas
         {
-            Width = Plugin.Instance.WindowWidth,
-            Height = Plugin.Instance.WindowHeight
+            Width = secondWindowWidth,
+            Height = secondWindowHeight
         };
         Content = _parentCanvas;
-        FontSize = 12;
+        int.TryParse(Config.Current.BaseFontSize, out var baseFontSize);
+        FontSize = baseFontSize;
         Show();
+        Plugin.Instance.IsLoaded = true;
     }
 
-    public static void AddDisplayToList(LcdDisplay lcdDisplay)
-    {
-        LcdDisplays.Add(lcdDisplay);
-    }
+    // private static void OnWindowClosed(object sender, EventArgs e)
+    // {
+    //     Plugin.Instance.IsLoaded = false;
+    // }
 
-    public static void UpdateLcdList(LcdDisplay lcdDisplay)
+    public static void AddTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
     {
-        foreach (var lcd in LcdDisplays)
-        {
-            if (lcd.Block.EntityId != lcdDisplay.Block.EntityId) continue;
-            lcd.LcdText = lcdDisplay.LcdText;
-            lcd.thisTextcolour = lcdDisplay.thisTextcolour;
-            lcd.thisTextScale = lcdDisplay.thisTextScale;
-            lcd.thisTextPosition = lcdDisplay.thisTextPosition;
-            break;
-        }
+        //Application.Current.Dispatcher.Invoke(() =>
+        //{
+            var textbox = new TextBox
+            {
+                Text = text,
+                FontSize = fontsize,
+                Foreground = new SolidColorBrush(textColor),
+                BorderBrush = new SolidColorBrush(Colors.Transparent),
+                Background = new SolidColorBrush(Colors.Transparent)
+            };
+            textbox.SetValue(Canvas.LeftProperty, position.X);
+            textbox.SetValue(Canvas.TopProperty, position.Y);
+            LcdDisplaysDictionary.Add(entityId, textbox);
+        //});
     }
     
-    public static void RemoveLcdFromList(long entityId)
+    public static void UpdateTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
     {
-        foreach (var lcd in LcdDisplays)
+        //Application.Current.Dispatcher.Invoke(() =>
+        //{
+            foreach (var kv in LcdDisplaysDictionary)
+            {
+                if (kv.Key != entityId) continue;
+                kv.Value.Text = text;
+                kv.Value.Foreground = new SolidColorBrush(textColor);
+                kv.Value.FontSize = fontsize;
+                kv.Value.SetValue(Canvas.LeftProperty, position.X);
+                kv.Value.SetValue(Canvas.TopProperty, position.Y);
+                break;
+            }
+        //});
+    }
+    
+    public static void RemoveTextBox(long entityId)
+    {
+        foreach (var kv in LcdDisplaysDictionary)
         {
-            if (lcd.Block.EntityId != entityId) continue;
-            LcdDisplays.Remove(lcd);
+            if (kv.Key != entityId) continue;
+            LcdDisplaysDictionary.Remove(kv.Key);
             break;
         }
     }
 
-    public static void UpdateDisplay()
+    public static void ClearDisplayList()
     {
-        var displays = LcdDisplays;
-        var displaysDictionary = _lcdDisplaysDictionary;
-        //called every 10 frames, this is what will update stuff on the second window
-        foreach (var lcd in LcdDisplays)
-        {
-            var createNew = true;
-            foreach (var kv in _lcdDisplaysDictionary)
-            {
-                if (kv.Key == lcd.Block.EntityId)
-                {
-                    //then its just updating the textbox
-                    //text
-                    kv.Value.Text = lcd.LcdText.ToString();
-                    //position
-                    Vector2D canvasVector = LcdDisplay.ConvertToCanvasPos(lcd.thisTextPosition);
-                    kv.Value.SetValue(Canvas.LeftProperty, canvasVector.X);
-                    kv.Value.SetValue(Canvas.TopProperty, canvasVector.Y);
-                    //scale
-                    kv.Value.FontSize = 10;
-                    //kv.Value.FontSize = lcd.thisTextScale; //probably will need to scale this to match SE
-                    //colour
-                    var color = new Color //why do you have to use your own colour class keeen
-                    {
-                        R = lcd.thisTextcolour.R,
-                        G = lcd.thisTextcolour.G,
-                        B = lcd.thisTextcolour.B,
-                        A = lcd.thisTextcolour.A
-                    };
-                    kv.Value.Foreground = new SolidColorBrush(color);
-                    createNew = false;
-                    break;
-                }
-            }
-            if (createNew)
-            {
-                //then its creating a new textbox
-                var textbox = new TextBox();
-                Vector2D canvasVector = LcdDisplay.ConvertToCanvasPos(lcd.thisTextPosition);
-                textbox.SetValue(Canvas.LeftProperty, canvasVector.X);
-                textbox.SetValue(Canvas.TopProperty, canvasVector.Y);
-                textbox.FontSize = lcd.thisTextScale;
-                textbox.Text = lcd.LcdText.ToString();
-                textbox.Background = new SolidColorBrush(Colors.Transparent);
-                var color = new Color //why do you have to use your own colour class keeen
-                {
-                    R = lcd.thisTextcolour.R,
-                    G = lcd.thisTextcolour.G,
-                    B = lcd.thisTextcolour.B,
-                    A = lcd.thisTextcolour.A
-                };
-                textbox.Foreground = new SolidColorBrush(color);
-                _lcdDisplaysDictionary.Add(lcd.Block.EntityId, textbox);
-            }
-        }
-        
-        var canvas = _parentCanvas;
-        //MAKE SURE TO MAKE THIS MORE PERFORMANT!!!
+        LcdDisplaysDictionary.Clear();
         _parentCanvas.Children.Clear();
-        foreach (var kv in _lcdDisplaysDictionary)
+    }
+    
+    public static void UpdateOutput()
+    {
+        //called every 10 frames, this is what will update stuff on the second window
+        //wish I could do this a smarter way, but i can't think of one
+        _parentCanvas.Children.Clear();
+        foreach (var kv in LcdDisplaysDictionary)
         {
             _parentCanvas.Children.Add(kv.Value);
         }

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Reflection;
 using System.Text;
+using System.Windows.Controls;
 using HarmonyLib;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces;
 using VRage.Utils;
-using VRageRender;
+using VRageMath;
+using Color = VRageMath.Color;
 
 namespace ClientPlugin;
 
@@ -70,9 +72,10 @@ public class HudLcdPatch
     {
         //this is called when the hudlcd is closed, so we need to remove it from the list
         var entityId = ___thisTextPanel.EntityId;
+        if (!Plugin.Instance.IsLoaded) return true;
         SecondWindowThread.WpfWindow.Dispatcher.Invoke(() =>
         {
-            SecondWindow.RemoveLcdFromList(entityId);
+            SecondWindow.RemoveTextBox(entityId);
         });
         return true; //still run the origional method
     }
@@ -95,25 +98,26 @@ public class HudLcdPatch
             return false;
         }
 
-        LcdDisplay currentLcd = null;
-        foreach (var lcd in SecondWindow.LcdDisplays)
+        var entityId = ___thisTextPanel.EntityId;
+        
+        
+        TextBox currentTextBox = null;
+        foreach (var kv in SecondWindow.LcdDisplaysDictionary)
         {
-            if (lcd.Block.EntityId == ___thisTextPanel.EntityId)
+            if (kv.Key == entityId)
             {
-                currentLcd = lcd;
+                currentTextBox = kv.Value;
                 break;
             }
         }
 
-        var newLcd = false;
-        if (currentLcd == null)
-        {
-            //create a new one
-            currentLcd = new LcdDisplay(___thisTextPanel);
-            newLcd = true;
-        }
+        bool newLcd = currentTextBox == null;
 
-        currentLcd.thisTextScale = ___thisTextPanel.FontSize;
+        var configPos = new Vector2D();
+        double textScale = 1;
+        var fontColour = Color.Black;
+        
+        //currentLcd.thisTextScale = ___thisTextPanel.FontSize;
         // Get config from config string
         var lines = config.Split('\n');
         foreach (var line in lines)
@@ -132,28 +136,13 @@ public class HudLcdPatch
                             case 0:
                                 break;
                             case 1:
-                                currentLcd.thisTextPosition.X = Trygetdouble(rawconf[i], textPosXDefault);
+                                configPos.X = Trygetdouble(rawconf[i], textPosXDefault);
                                 break;
                             case 2:
-                                currentLcd.thisTextPosition.Y = Trygetdouble(rawconf[i], textPosYDefault);
+                                configPos.Y = Trygetdouble(rawconf[i], textPosYDefault);
                                 break;
                             case 3:
-                                currentLcd.thisTextScale = Trygetdouble(rawconf[i], textScaleDefault);
-                                break;
-                            case 4:
-                                //currentLcd.thisTextcolour = "<color=" + rawconf[i].Trim() + ">";
-                                //going to remove support for colour defined in the config,
-                                //I don't think any script uses it
-                                break;
-                            case 5:
-                                if (rawconf[i].Trim() == "1")
-                                {
-                                    currentLcd.thisTextFontShadow = true;
-                                }
-                                else
-                                {
-                                    currentLcd.thisTextFontShadow = false;
-                                }
+                                textScale = Trygetdouble(rawconf[i], textScaleDefault);
                                 break;
                         }
                     }
@@ -164,50 +153,57 @@ public class HudLcdPatch
                             case 0:
                                 break;
                             case 1:
-                                currentLcd.thisTextPosition.X = textPosXDefault;
+                                configPos.X = textPosXDefault;
                                 break;
                             case 2:
-                                currentLcd.thisTextPosition.Y = textPosYDefault;
+                                configPos.Y = textPosYDefault;
                                 break;
                             case 3:
-                                currentLcd.thisTextScale = ___thisTextPanel.FontSize;
+                                textScale = ___thisTextPanel.FontSize;
                                 break;
                             case 4:
-                                var fontColor = ___thisTextPanel.GetValueColor("FontColor");
-                                currentLcd.thisTextcolour = fontColor;
-                                break;
-                            case 5:
-                                currentLcd.thisTextFontShadow = false;
+                                var fontColourtemp = ___thisTextPanel.GetValueColor("FontColor");
+                                fontColour = fontColourtemp;
                                 break;
                         }
                     }
-
                 }
                 break; // stop processing lines from Custom Data
             }
         }
-
-        if (newLcd)
-            SecondWindowThread.WpfWindow.Dispatcher.Invoke(() =>
+        int.TryParse(Config.Current.SecondWindowWidth, out var secondWindowWidth);
+        int.TryParse(Config.Current.SecondWindowHeight, out var secondWindowHeight);
+        configPos = new Vector2D((configPos.X + 1)/2 * secondWindowWidth, 
+            (1 - (configPos.Y + 1)/2) * secondWindowHeight);
+        int.TryParse(Config.Current.BaseFontSize, out var baseFontSize);
+        textScale = baseFontSize * textScale;
+        var colour = new System.Windows.Media.Color //why do you have to use your own colour class keeen
+        {
+            R = fontColour.R,
+            G = fontColour.G,
+            B = fontColour.B,
+            A = fontColour.A
+        };
+        var currentLcdText = new StringBuilder();
+        ___thisTextPanel.ReadText(currentLcdText, true);
+        var currentLcdTextString = currentLcdText.ToString();
+        if (Plugin.Instance.IsLoaded)
+        {
+            if (newLcd)
             {
-                SecondWindow.AddDisplayToList(currentLcd);
+                SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(() =>
+                {
+                    SecondWindow.AddTextBox(entityId, textScale, colour, currentLcdTextString, configPos);
+                });
+            }
+            //now to actually read the stuff from the LCD
+            SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(() =>
+            {
+                SecondWindow.UpdateTextBox(entityId, textScale, colour, currentLcdTextString, configPos);
             });
-        //now to actually read the stuff from the LCD
-        UpdateHudMessage(currentLcd);
-        
+        }
         __result = false; 
         return false; //stopping hudlcd from creating the hudmessage thingy
-    }
-    
-    private static void UpdateHudMessage(LcdDisplay currentLcd)
-    {
-        currentLcd.LcdText ??= new StringBuilder(500);
-        currentLcd.LcdText.Clear();
-        currentLcd.Block.ReadText(currentLcd.LcdText, true);
-        SecondWindowThread.WpfWindow.Dispatcher.Invoke(() =>
-        {
-            SecondWindow.UpdateLcdList(currentLcd);
-        });
     }
     
     private static double Trygetdouble(string v, double defaultval)

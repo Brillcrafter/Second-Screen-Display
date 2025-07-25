@@ -28,7 +28,9 @@ namespace ClientPlugin
         private bool toggle = true;
         private int integer = 2;
         private float number = 0.1f;
-        private string text = "Default Text";
+        private string baseFontSize = "10";
+        private string secondWindowWidth = "1920";
+        private string secondWindowHeight = "1080";
         private ExampleEnum dropdown = ExampleEnum.FirstAlpha;
         private Color color = Color.Cyan;
         private Color colorWithAlpha = new Color(0.8f, 0.6f, 0.2f, 0.5f);
@@ -39,7 +41,7 @@ namespace ClientPlugin
         #region User interface
 
         // TODO: Settings dialog title
-        public readonly string Title = "Config Demo";
+        public readonly string Title = "Second Screen Display";
 
         // TODO: Settings dialog controls, one property for each configuration option
 
@@ -49,34 +51,28 @@ namespace ClientPlugin
             get => toggle;
             set => SetField(ref toggle, value);
         }
-
-        [Slider(-1f, 10f, 1f, SliderAttribute.SliderType.Integer, description: "Integer Slider Tooltip")]
-        public int Integer
+        
+        [Textbox(description: "Base Font Size")]
+        public string BaseFontSize
         {
-            get => integer;
-            set => SetField(ref integer, value);
+            get => baseFontSize;
+            set => SetField(ref baseFontSize, value);
         }
-
-        [Slider(-5f, 4.5f, 0.5f, SliderAttribute.SliderType.Float, description: "Float Slider Tooltip")]
-        public float Number
+        
+        [Textbox(description: "Second Window Width")]
+        public string SecondWindowWidth
         {
-            get => number;
-            set => SetField(ref number, value);
+            get => secondWindowWidth;
+            set => SetField(ref secondWindowWidth, value);
         }
-
-        [Textbox(description: "Textbox Tooltip")]
-        public string Text
+        
+        [Textbox(description: "Second Window Height")]
+        public string SecondWindowHeight
         {
-            get => text;
-            set => SetField(ref text, value);
+            get => secondWindowHeight;
+            set => SetField(ref secondWindowHeight, value);
         }
-
-        [Dropdown(description: "Dropdown Tooltip")]
-        public ExampleEnum Dropdown
-        {
-            get => dropdown;
-            set => SetField(ref dropdown, value);
-        }
+        
 
         [Color(description: "RGB color")]
         public Color Color

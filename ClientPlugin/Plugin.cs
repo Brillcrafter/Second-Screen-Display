@@ -18,14 +18,12 @@ public class Plugin: IPlugin
     public const string Name = "SecondScreenDisplay";
     public static Plugin Instance { get; private set; }
     private SettingsGenerator _settingsGenerator;
-    private bool _isLoaded;
+    public bool IsLoaded;
     public bool InitPatch;
     public static Harmony HarmonyPatcher { get; private set; }
-
-    public int WindowWidth = 1920;
-    public int WindowHeight = 1080;
     
-    bool IsControlled => MyAPIGateway.Session?.LocalHumanPlayer?.Controller?.ControlledEntity is IMyTerminalBlock;
+    private bool IsControlled => MyAPIGateway.Session?.LocalHumanPlayer?.Controller?.ControlledEntity is IMyTerminalBlock;
+    private bool _prevControlled = false;
 
     private int _counter;
     
@@ -40,9 +38,7 @@ public class Plugin: IPlugin
     later add options to have it on both or only SE.
     
     */
-        
-        
-
+    
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     public void Init(object gameInstance)
     {
@@ -66,28 +62,32 @@ public class Plugin: IPlugin
     public void Update()
     {
         // TODO: Put your update code here. It is called on every simulation frame!
-        if (!Instance._isLoaded)
-        {
-            SecondWindowThread.CreateThread();
-            Instance._isLoaded = true;  
-        }
         if (MyAPIGateway.Multiplayer == null || MySession.Static?.LocalCharacter == null || MyAPIGateway.Session == null)
         {
             return;
         }
-        
-        
-        if (Instance._counter == 10)
+
+        if (!IsLoaded) return;
+        if (Instance._counter == 5)
         {
             Instance._counter = 0;
             if (Instance.IsControlled)
             {
-                SecondWindowThread.WpfWindow.Dispatcher.Invoke(SecondWindow.UpdateDisplay);
+                Instance._prevControlled = true;
+                SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(SecondWindow.UpdateOutput);
                 //send the call to update the second window output
+            }
+            else if (Instance._prevControlled && !Instance.IsControlled)
+            {
+                Instance._prevControlled = false;
+                SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(SecondWindow.ClearDisplayList);
+                //send the call to clear the second window output
             }
         }
         else Instance._counter++;
+
     }
+    
 
     // ReSharper disable once UnusedMember.Global
     public void OpenConfigDialog()

@@ -7,16 +7,53 @@ namespace ClientPlugin;
 public class SecondWindowThread
 {
     public static SecondWindow WpfWindow;
+    public static Thread WpfThread;
 
     public static void CreateThread()
     {
-        var wpfThread = new Thread(() =>
+        if (WpfThread != null && WpfThread.IsAlive)
         {
-            var app = new Application();
+            if (WpfWindow != null)
+            {
+                WpfWindow.Dispatcher.Invoke(() =>
+                {
+                    if (!WpfWindow.IsVisible)
+                        WpfWindow.Show();
+                    WpfWindow.Activate();
+                });
+            }
+
+            return;
+        }
+        WpfThread = new Thread(() =>
+        {
             WpfWindow = new SecondWindow();
-            app.Run(WpfWindow);
+            WpfWindow.Closed += (sender, args) =>
+            {
+                Plugin.Instance.IsLoaded = false;
+                WpfWindow.Dispatcher.InvokeShutdown(); // Properly shut down the dispatcher
+                WpfWindow = null;
+            };
+
+            // Run the dispatcher loop for the thread (no need for explicit Application)
+            System.Windows.Threading.Dispatcher.Run();
         });
-        wpfThread.SetApartmentState(ApartmentState.STA); // WPF requires STA threads
-        wpfThread.Start();
+        
+        WpfThread.SetApartmentState(ApartmentState.STA); // WPF requires STA threads
+        WpfThread.Start();
+
+
+        
+        
+        
+        //
+        // WpfThread = new Thread(() =>
+        // {
+        //     var app = new Application();
+        //     WpfWindow = new SecondWindow();
+        //     app.Run(WpfWindow);
+        // });
+        // WpfThread.SetApartmentState(ApartmentState.STA); // WPF requires STA threads
+        // WpfThread.Start();
     }
 }
