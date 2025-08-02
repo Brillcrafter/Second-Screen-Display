@@ -11,6 +11,7 @@ public class SecondWindowThread
 
     public static void CreateThread()
     {
+        if (Plugin.Instance.IsLoaded) return;
         if (_wpfThread != null && _wpfThread.IsAlive)
         {
             if (WpfWindow != null)

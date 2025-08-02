@@ -19,9 +19,12 @@ public partial class SecondWindow
     public SecondWindow()
     {
         InitializeComponent();
-        //Closed += OnWindowClosed;
-        var customFont = new FontFamily(new Uri("pack://application:,,,/SecondScreenDisplay;component/mywindow.xaml"),
-            "./resources/#BigBlueTermPlus Nerd Font Mono");
+        //I have to do this jank, Space.... packaging is so much more convenient.....
+        var location = "file:///" + AppContext.BaseDirectory + "Plugins/Github/Brillcrafter/Second-Screen-Display/resources";
+        //for pluginhub version, change to "Plugins/Github/Brillcrafter/Second-Screen-Display/resources"
+        //for local testing, change to "Plugins/Local/SecondScreenDisplay/resources"
+        location = location.Replace(@"\", "/");
+        var customFont = new FontFamily(location+"/#BigBlueTermPlus Nerd Font Mono");
         Title = "Second Screen Display";
         FontFamily = customFont;
         int.TryParse(Config.Current.SecondWindowWidth, out var secondWindowWidth);
