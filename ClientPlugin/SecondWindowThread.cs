@@ -2,46 +2,47 @@
 using System.Threading;
 using System.Windows;
 
-namespace ClientPlugin;
-
-public class SecondWindowThread
+namespace ClientPlugin
 {
-    public static SecondWindow WpfWindow;
-    private static Thread _wpfThread;
-
-    public static void CreateThread()
+    public class SecondWindowThread
     {
-        if (Plugin.Instance.IsLoaded) return;
-        if (_wpfThread != null && _wpfThread.IsAlive)
+        public static SecondWindow WpfWindow;
+        private static Thread _wpfThread;
+
+        public static void CreateThread()
         {
-            if (WpfWindow != null)
+            if (Plugin.Instance.IsLoaded) return;
+            if (_wpfThread != null && _wpfThread.IsAlive)
             {
-                WpfWindow.Dispatcher.Invoke(() =>
+                if (WpfWindow != null)
                 {
-                    if (!WpfWindow.IsVisible)
-                        WpfWindow.Show();
-                    WpfWindow.Activate();
-                });
+                    WpfWindow.Dispatcher.Invoke(() =>
+                    {
+                        if (!WpfWindow.IsVisible)
+                            WpfWindow.Show();
+                        WpfWindow.Activate();
+                    });
+                }
+
+                return;
             }
-
-            return;
-        }
-        _wpfThread = new Thread(() =>
-        {
-            WpfWindow = new SecondWindow();
-            WpfWindow.Closed += (sender, args) =>
+            _wpfThread = new Thread(() =>
             {
-                WpfWindow.Dispatcher.Invoke(SecondWindow.ClearDisplayList);
-                Plugin.Instance.IsLoaded = false;
-                WpfWindow.Dispatcher.InvokeShutdown(); // Properly shut down the dispatcher
-                WpfWindow = null;
-            };
+                WpfWindow = new SecondWindow();
+                WpfWindow.Closed += (sender, args) =>
+                {
+                    WpfWindow.Dispatcher.Invoke(SecondWindow.ClearDisplayList);
+                    Plugin.Instance.IsLoaded = false;
+                    WpfWindow.Dispatcher.InvokeShutdown(); // Properly shut down the dispatcher
+                    WpfWindow = null;
+                };
 
-            // Run the dispatcher loop for the thread (no need for explicit Application)
-            System.Windows.Threading.Dispatcher.Run();
-        });
+                // Run the dispatcher loop for the thread (no need for explicit Application)
+                System.Windows.Threading.Dispatcher.Run();
+            });
         
-        _wpfThread.SetApartmentState(ApartmentState.STA); // WPF requires STA threads
-        _wpfThread.Start();
+            _wpfThread.SetApartmentState(ApartmentState.STA); // WPF requires STA threads
+            _wpfThread.Start();
+        }
     }
 }
