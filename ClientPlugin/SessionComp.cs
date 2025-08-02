@@ -29,7 +29,7 @@ public class SessionComp : MySessionComponentBase
             MyAPIGateway.Utilities.MessageEnteredSender -= HandleCommand;
             Instance._chatCommandsInit = false;
             Plugin.Instance.InitPatch = false;
-            if (Plugin.Instance.IsLoaded) SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(SecondWindow.ClearDisplayList);
+            if (Plugin.Instance.IsLoaded) SecondWindowInter.ClearDisplayListInter();
         }
         catch (Exception e)
         {

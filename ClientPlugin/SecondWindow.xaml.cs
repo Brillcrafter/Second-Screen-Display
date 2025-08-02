@@ -39,12 +39,7 @@ public partial class SecondWindow
         Show();
         Plugin.Instance.IsLoaded = true;
     }
-
-    // private static void OnWindowClosed(object sender, EventArgs e)
-    // {
-    //     Plugin.Instance.IsLoaded = false;
-    // }
-
+    
     public static void AddTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
     {
         //Application.Current.Dispatcher.Invoke(() =>

@@ -73,10 +73,7 @@ public class HudLcdPatch
         //this is called when the hudlcd is closed, so we need to remove it from the list
         var entityId = ___thisTextPanel.EntityId;
         if (!Plugin.Instance.IsLoaded) return true;
-        SecondWindowThread.WpfWindow.Dispatcher.Invoke(() =>
-        {
-            SecondWindow.RemoveTextBox(entityId);
-        });
+        SecondWindowInter.RemoveTextBoxInter(entityId);
         return true; //still run the origional method
     }
 
@@ -187,23 +184,26 @@ public class HudLcdPatch
         var currentLcdText = new StringBuilder();
         ___thisTextPanel.ReadText(currentLcdText, true);
         var currentLcdTextString = currentLcdText.ToString();
-        if (Plugin.Instance.IsLoaded)
+        switch (Plugin.Instance.IsLoaded)
         {
-            if (newLcd)
+            case true:
             {
-                SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(() =>
+                if (newLcd)
                 {
-                    SecondWindow.AddTextBox(entityId, textScale, colour, currentLcdTextString, configPos);
-                });
+                    SecondWindowInter.AddTextBoxInter(entityId, textScale, colour, currentLcdTextString, configPos);
+                }
+                //now to actually read the stuff from the LCD
+            
+                SecondWindowInter.UpdateTextBoxInter(entityId, textScale, colour, currentLcdTextString, configPos);
+                break;
             }
-            //now to actually read the stuff from the LCD
-            SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(() =>
-            {
-                SecondWindow.UpdateTextBox(entityId, textScale, colour, currentLcdTextString, configPos);
-            });
+            case false:
+                return true; //run the original method if the window isn't made
         }
-        __result = false; 
-        return false; //stopping hudlcd from creating the hudmessage thingy
+
+        __result = false;//stop hudlcd from creating the hudmessage thingy if the window is made
+        return false;
+
     }
     
     private static double Trygetdouble(string v, double defaultval)

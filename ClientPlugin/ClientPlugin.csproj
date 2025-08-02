@@ -640,6 +640,7 @@
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecondWindow.xaml.cs" />
+    <Compile Include="SecondWindowInter.cs" />
     <Compile Include="SecondWindowThread.cs" />
     <Compile Include="SessionComp.cs" />
     <Compile Include="Settings\ConfigStorage.cs" />

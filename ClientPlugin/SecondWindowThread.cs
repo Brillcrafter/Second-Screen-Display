@@ -7,11 +7,11 @@ namespace ClientPlugin;
 public class SecondWindowThread
 {
     public static SecondWindow WpfWindow;
-    public static Thread WpfThread;
+    private static Thread _wpfThread;
 
     public static void CreateThread()
     {
-        if (WpfThread != null && WpfThread.IsAlive)
+        if (_wpfThread != null && _wpfThread.IsAlive)
         {
             if (WpfWindow != null)
             {
@@ -25,11 +25,12 @@ public class SecondWindowThread
 
             return;
         }
-        WpfThread = new Thread(() =>
+        _wpfThread = new Thread(() =>
         {
             WpfWindow = new SecondWindow();
             WpfWindow.Closed += (sender, args) =>
             {
+                WpfWindow.Dispatcher.Invoke(SecondWindow.ClearDisplayList);
                 Plugin.Instance.IsLoaded = false;
                 WpfWindow.Dispatcher.InvokeShutdown(); // Properly shut down the dispatcher
                 WpfWindow = null;
@@ -39,21 +40,7 @@ public class SecondWindowThread
             System.Windows.Threading.Dispatcher.Run();
         });
         
-        WpfThread.SetApartmentState(ApartmentState.STA); // WPF requires STA threads
-        WpfThread.Start();
-
-
-        
-        
-        
-        //
-        // WpfThread = new Thread(() =>
-        // {
-        //     var app = new Application();
-        //     WpfWindow = new SecondWindow();
-        //     app.Run(WpfWindow);
-        // });
-        // WpfThread.SetApartmentState(ApartmentState.STA); // WPF requires STA threads
-        // WpfThread.Start();
+        _wpfThread.SetApartmentState(ApartmentState.STA); // WPF requires STA threads
+        _wpfThread.Start();
     }
 }

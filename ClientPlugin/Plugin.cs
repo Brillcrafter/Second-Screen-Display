@@ -74,13 +74,13 @@ public class Plugin: IPlugin
             if (Instance.IsControlled)
             {
                 Instance._prevControlled = true;
-                SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(SecondWindow.UpdateOutput);
+                SecondWindowInter.UpdateDisplayInter();
                 //send the call to update the second window output
             }
             else if (Instance._prevControlled && !Instance.IsControlled)
             {
                 Instance._prevControlled = false;
-                SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(SecondWindow.ClearDisplayList);
+                SecondWindowInter.ClearDisplayListInter();
                 //send the call to clear the second window output
             }
         }
