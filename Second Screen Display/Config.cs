@@ -4,38 +4,23 @@ using Sandbox.Graphics.GUI;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
-using VRage.Input;
-using VRageMath;
 
 
 namespace ClientPlugin
 {
-    public enum ExampleEnum
-    {
-        FirstAlpha,
-        SecondBeta,
-        ThirdGamma,
-        AndTheDelta,
-        Epsilon
-    }
-
     public class Config : INotifyPropertyChanged
     {
         #region Options
-
-        // TODO: Define your configuration options and their default values
+        
         private string baseFontSize = "10";
         private string secondWindowWidth = "1920";
         private string secondWindowHeight = "1080";
         #endregion
 
         #region User interface
-
-        // TODO: Settings dialog title
+        
         public readonly string Title = "Second Screen Display";
-
-        // TODO: Settings dialog controls, one property for each configuration option
+        
         
         [Textbox(description: "Base Font Size")]
         public string BaseFontSize
