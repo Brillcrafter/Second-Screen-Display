@@ -1,4 +1,6 @@
-﻿using System.Windows.Threading;
+﻿using System.Collections.Generic;
+using System.Windows.Threading;
+using VRage.Game.GUI.TextPanel;
 using VRageMath;
 using Color = System.Windows.Media.Color;
 
@@ -7,6 +9,17 @@ namespace ClientPlugin
     public class SecondWindowInter
     {
         //this is to make sure that it dosen't access a closed window
+
+        public static void AddSpriteLcdInter(long entityId, List<MySprite> spriteList)
+        {
+            if (!Plugin.Instance.IsLoaded) return;
+            SecondWindowThread.WpfWindow.Dispatcher.BeginInvoke(() =>
+            {
+                SecondWindow.AddSpriteLcd(entityId, spriteList);
+            });
+        }
+        
+        
         public static void AddTextBoxInter(long entityId, double fontsize, Color textColor, string text, Vector2D position)
         {
             if (!Plugin.Instance.IsLoaded) return;

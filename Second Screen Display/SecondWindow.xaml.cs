@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using VRage.Game.GUI.TextPanel;
 using VRageMath;
 using Color = System.Windows.Media.Color;
+
 
 namespace ClientPlugin
 {
@@ -15,12 +15,14 @@ namespace ClientPlugin
     
         //this stores the displayed text boxes
         public static Dictionary<long, TextBox> LcdDisplaysDictionary = new Dictionary<long, TextBox>();
+        
+        public static Dictionary<long, List<MySprite>> SpriteDictionary = new Dictionary<long, List<MySprite>>();
     
         public SecondWindow()
         {
             InitializeComponent();
             //I have to do this jank, Space.... packaging is so much more convenient.....
-            var location = "file:///" + AppContext.BaseDirectory + "Plugins/Github/Brillcrafter/Second-Screen-Display/resources";
+            var location = "file:///" + AppContext.BaseDirectory + "Plugins/Local/SecondScreenDisplay/resources";
             //for pluginhub version, change to "Plugins/Github/Brillcrafter/Second-Screen-Display/resources"
             //for local testing, change to "Plugins/Local/SecondScreenDisplay/resources"
             location = location.Replace(@"\", "/");
@@ -42,11 +44,37 @@ namespace ClientPlugin
             Show();
             Plugin.Instance.IsLoaded = true;
         }
+
+        public static void AddSpriteLcd(long entityId, List<MySprite> spriteList)
+        {
+            var tempList = new List<MySprite>();
+            foreach (var sprite in spriteList)
+            {
+                var replaceData = sprite.Data;
+                if (sprite.Type == SpriteType.TEXTURE)
+                {//to remove my placeholder chars
+                    replaceData = sprite.Data.Replace("/", ";");
+                    replaceData = replaceData.Replace(@"\", "#");
+                }
+
+                var tempSprite = new MySprite
+                {
+                    Type = sprite.Type,
+                    Data = replaceData,
+                    Position = sprite.Position,
+                    Size = sprite.Size,
+                    Color = sprite.Color,
+                    Alignment = sprite.Alignment,
+                    RotationOrScale = sprite.RotationOrScale,
+                    FontId = sprite.FontId,
+                };
+                tempList.Add(tempSprite);
+            }
+            SpriteDictionary[entityId] = tempList;
+        }
     
         public static void AddTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
         {
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
             var textbox = new TextBox
             {
                 Text = text,
@@ -58,13 +86,10 @@ namespace ClientPlugin
             textbox.SetValue(Canvas.LeftProperty, position.X);
             textbox.SetValue(Canvas.TopProperty, position.Y);
             LcdDisplaysDictionary.Add(entityId, textbox);
-            //});
         }
     
         public static void UpdateTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
         {
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
             foreach (var kv in LcdDisplaysDictionary)
             {
                 if (kv.Key != entityId) continue;
@@ -75,7 +100,6 @@ namespace ClientPlugin
                 kv.Value.SetValue(Canvas.TopProperty, position.Y);
                 break;
             }
-            //});
         }
     
         public static void RemoveTextBox(long entityId)

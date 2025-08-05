@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>7.3</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -237,6 +238,7 @@
       <HintPath>$(Bin64)\System.Diagnostics.Tracing.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>$(Bin64)\System.Drawing.Primitives.dll</HintPath>
       <Private>False</Private>
@@ -660,10 +662,12 @@
     <Compile Include="Settings\SettingsScreen.cs" />
     <Compile Include="Settings\Tools\Binding.cs" />
     <Compile Include="Settings\Tools\Tools.cs" />
+    <Compile Include="SpritePatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="deploy.bat" />
     <Content Include="PluginHub.xml" />
+    <Content Include="resources\space_engineers.ttf" />
     <Page Include="SecondWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -674,6 +678,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Lib.Harmony" Version="2.3.6" />
+    <PackageReference Include="Pfim" Version="0.11.3" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
