@@ -19,7 +19,9 @@ namespace ClientPlugin
         public static Dictionary<long, (List<MySprite>, Vector2, Vector2) > SpriteDictionary = new Dictionary<long, (List<MySprite>, Vector2, Vector2)>();
     
         //sprites location and scale on the window
-        public static Dictionary<long, (Vector2D, double)> SpriteOutputDictionary = new Dictionary<long, (Vector2D, double)>(); 
+        public static Dictionary<long, (Vector2D, double)> SpriteOutputDictionary = new Dictionary<long, (Vector2D, double)>();
+
+        private static FontFamily _SeFont;
         
         public SecondWindow()
         {
@@ -30,6 +32,7 @@ namespace ClientPlugin
             //for local testing, change to "Plugins/Local/SecondScreenDisplay/resources"
             location = location.Replace(@"\", "/");
             var customFont = new FontFamily(location+"/#BigBlueTermPlus Nerd Font Mono");
+            _SeFont = new FontFamily(location+"/#Space Engineers");
             Title = "Second Screen Display";
             FontFamily = customFont;
             int.TryParse(Config.Current.SecondWindowWidth, out var secondWindowWidth);
@@ -140,7 +143,40 @@ namespace ClientPlugin
 
                 foreach (var sprite in displayData.Item1)
                 {
-                    
+                    switch (sprite.Type)
+                    {
+                        case SpriteType.TEXT:
+                        {
+                            //then I can create a textbox
+                            var textbox = new TextBox();
+                            textbox.Text = sprite.Data;
+                            textbox.FontFamily = _SeFont;
+                            if (sprite.Color.HasValue)
+                            {
+                                var colour = new Color //why do you have to use your own colour class keeen
+                                {
+                                    R = sprite.Color.Value.R,
+                                    G = sprite.Color.Value.G,
+                                    B = sprite.Color.Value.B,
+                                    A = sprite.Color.Value.A
+                                };
+                                textbox.Foreground = new SolidColorBrush(colour);
+                            }
+                            
+                            break;
+                        }
+                        case SpriteType.TEXTURE:
+                        {
+                            //I need to load the correct image
+                            
+                            break;
+                        }
+                        case SpriteType.CLIP_RECT:
+                        {
+                            //I need to figure this one out
+                            break;
+                        }
+                    }
                 }
                 
                 
