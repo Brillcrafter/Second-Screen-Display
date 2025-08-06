@@ -26,14 +26,15 @@ namespace ClientPlugin
         public const string Name = "SecondScreenDisplay";
         public static Plugin Instance { get; private set; }
         private SettingsGenerator _settingsGenerator;
-        public bool IsLoaded;
-        public bool InitPatch;
+        public bool WindowOpen;
+        public bool InitHudLcdPatch;
         public bool ImagesConverted;
+        public bool InitSpritePatch;
         public static Harmony HarmonyPatcher { get; private set; }
         public readonly Dictionary<string, string> FileRefs = new Dictionary<string, string>();
     
-        private bool IsControlled => MyAPIGateway.Session?.LocalHumanPlayer?.Controller?.ControlledEntity is IMyTerminalBlock;
-        private bool _prevControlled = false;
+        public static bool IsControlled => MyAPIGateway.Session?.LocalHumanPlayer?.Controller?.ControlledEntity is IMyTerminalBlock;
+        private bool _prevControlled;
 
         private int _counter;
     
@@ -83,12 +84,12 @@ namespace ClientPlugin
                     //for pluginhub version, change to "Plugins/Github/Brillcrafter/Second-Screen-Display/resources"
                     //for local testing, change to "Plugins/Local/SecondScreenDisplay/resources"
                     convFileStorage = convFileStorage.Replace(@"\", "/");
-                    //if (Directory.Exists(convFileStorage))
-                    //{
+                    if (Directory.Exists(convFileStorage))
+                    {
                        //then the files are already there
-                       //ImagesConverted = true;
-                       //return;
-                    //}
+                       ImagesConverted = true;
+                       return;
+                    }
                     Directory.CreateDirectory(convFileStorage);
                     //getting where the sprites are stored
                     var mainFolder = AppContext.BaseDirectory;
@@ -154,8 +155,9 @@ namespace ClientPlugin
                 var data = Marshal.UnsafeAddrOfPinnedArrayElement(image.Data, 0);
                 using (var bitmap = new Bitmap(image.Width, image.Height, image.Stride, format, data))
                 {
-                    var outputPath = dest + "/"  + RenameFileToId(filename) + ".png";
-                    Instance.FileRefs.Add(RenameFileToId(filename), outputPath);
+                    var renamedFile = RenameFileToId(filename);
+                    var outputPath = dest + "/"  + renamedFile  + ".png";
+                    Instance.FileRefs.Add(renamedFile, outputPath);
                     bitmap.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
                 }
             }
@@ -675,17 +677,17 @@ namespace ClientPlugin
                 return;
             }
 
-            if (!Instance.IsLoaded) return;
+            if (!Instance.WindowOpen) return;
             if (Instance._counter == 5)
             {
                 Instance._counter = 0;
-                if (Instance.IsControlled)
+                if (IsControlled)
                 {
                     Instance._prevControlled = true;
                     SecondWindowInter.UpdateDisplayInter();
                     //send the call to update the second window output
                 }
-                else if (Instance._prevControlled && !Instance.IsControlled)
+                else if (Instance._prevControlled && !IsControlled)
                 {
                     Instance._prevControlled = false;
                     SecondWindowInter.ClearDisplayListInter();

@@ -37,12 +37,14 @@ namespace ClientPlugin
             var postfix = typeof(SpritePatch).GetMethod(nameof(UpdateSpritesTexturePostFix));
             Plugin.HarmonyPatcher.Patch(method, postfix: new HarmonyMethod(postfix));
             MyLog.Default.WriteLine("SpritePatch finished");
+            Plugin.Instance.InitSpritePatch = true;
         }
 
-        private static void UpdateSpritesTexturePostFix(MyTextPanel __instance,bool __result, List<MySprite> ___m_renderLayers, MyTerminalBlock ___m_block)
+        private static void UpdateSpritesTexturePostFix(MyTextPanelComponent __instance, bool __result, List<MySprite> ___m_renderLayers, MyTerminalBlock ___m_block)
         {
-            if (!__result) return;
-            SecondWindowInter.AddSpriteLcdInter(__instance.EntityId, ___m_renderLayers);
+            if (!__result || !Plugin.IsControlled) return;
+            SecondWindowInter.AddSpriteLcdInter(___m_block.EntityId, (___m_renderLayers, 
+                __instance.TextureSize - __instance.SurfaceSize / 2f, __instance.SurfaceSize));
         }
     }
 }

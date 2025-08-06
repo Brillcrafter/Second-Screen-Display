@@ -11,7 +11,7 @@ namespace ClientPlugin
 
         public static void CreateThread()
         {
-            if (Plugin.Instance.IsLoaded) return;
+            if (Plugin.Instance.WindowOpen) return;
             if (_wpfThread != null && _wpfThread.IsAlive)
             {
                 if (WpfWindow != null)
@@ -32,7 +32,7 @@ namespace ClientPlugin
                 WpfWindow.Closed += (sender, args) =>
                 {
                     WpfWindow.Dispatcher.Invoke(SecondWindow.ClearDisplayList);
-                    Plugin.Instance.IsLoaded = false;
+                    Plugin.Instance.WindowOpen = false;
                     WpfWindow.Dispatcher.InvokeShutdown(); // Properly shut down the dispatcher
                     WpfWindow = null;
                 };

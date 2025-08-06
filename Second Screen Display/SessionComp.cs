@@ -19,7 +19,14 @@ namespace ClientPlugin
     
         public override void BeforeStart()
         {
-            if (!Plugin.Instance.InitPatch){HudLcdPatch.Start();}
+            if (!Plugin.Instance.InitHudLcdPatch)
+            {
+                HudLcdPatch.Start();
+            }
+            if (!Plugin.Instance.InitSpritePatch)
+            {
+                SpritePatch.Start();
+            }
         }
 
         protected override void UnloadData()
@@ -28,8 +35,9 @@ namespace ClientPlugin
             {
                 MyAPIGateway.Utilities.MessageEnteredSender -= HandleCommand;
                 Instance._chatCommandsInit = false;
-                Plugin.Instance.InitPatch = false;
-                if (Plugin.Instance.IsLoaded) SecondWindowInter.ClearDisplayListInter();
+                Plugin.Instance.InitHudLcdPatch = false;
+                Plugin.Instance.InitSpritePatch = false;
+                if (Plugin.Instance.WindowOpen) SecondWindowInter.ClearDisplayListInter();
             }
             catch (Exception e)
             {
@@ -48,7 +56,7 @@ namespace ClientPlugin
             {
                 sendToOthers = false;
                 var text = MessageText.Split(' ')[1];
-                if (text == "open" && !Plugin.Instance.IsLoaded)
+                if (text == "open" && !Plugin.Instance.WindowOpen)
                 {
                     SecondWindowThread.CreateThread();
                 }

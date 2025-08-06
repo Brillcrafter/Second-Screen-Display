@@ -6,7 +6,6 @@ using VRage.Game.GUI.TextPanel;
 using VRageMath;
 using Color = System.Windows.Media.Color;
 
-
 namespace ClientPlugin
 {
     public partial class SecondWindow
@@ -16,8 +15,12 @@ namespace ClientPlugin
         //this stores the displayed text boxes
         public static Dictionary<long, TextBox> LcdDisplaysDictionary = new Dictionary<long, TextBox>();
         
-        public static Dictionary<long, List<MySprite>> SpriteDictionary = new Dictionary<long, List<MySprite>>();
+        //sprites to display, Viewport offset, surface size (total drawable area)
+        public static Dictionary<long, (List<MySprite>, Vector2, Vector2) > SpriteDictionary = new Dictionary<long, (List<MySprite>, Vector2, Vector2)>();
     
+        //sprites location and scale on the window
+        public static Dictionary<long, (Vector2D, double)> SpriteOutputDictionary = new Dictionary<long, (Vector2D, double)>(); 
+        
         public SecondWindow()
         {
             InitializeComponent();
@@ -42,13 +45,13 @@ namespace ClientPlugin
             int.TryParse(Config.Current.BaseFontSize, out var baseFontSize);
             FontSize = baseFontSize;
             Show();
-            Plugin.Instance.IsLoaded = true;
+            Plugin.Instance.WindowOpen = true;
         }
 
-        public static void AddSpriteLcd(long entityId, List<MySprite> spriteList)
+        public static void AddSpriteLcd(long entityId, (List<MySprite>, Vector2, Vector2) spriteList)
         {
             var tempList = new List<MySprite>();
-            foreach (var sprite in spriteList)
+            foreach (var sprite in spriteList.Item1)
             {
                 var replaceData = sprite.Data;
                 if (sprite.Type == SpriteType.TEXTURE)
@@ -70,7 +73,12 @@ namespace ClientPlugin
                 };
                 tempList.Add(tempSprite);
             }
-            SpriteDictionary[entityId] = tempList;
+            SpriteDictionary[entityId] = (tempList, spriteList.Item2, spriteList.Item3);
+        }
+
+        public static void AddSpritePosition(long entityId, (Vector2D, double) posScale)
+        {
+            SpriteOutputDictionary[entityId] = posScale;
         }
     
         public static void AddTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
@@ -85,10 +93,10 @@ namespace ClientPlugin
             };
             textbox.SetValue(Canvas.LeftProperty, position.X);
             textbox.SetValue(Canvas.TopProperty, position.Y);
-            LcdDisplaysDictionary.Add(entityId, textbox);
+            LcdDisplaysDictionary[entityId] = textbox;
         }
     
-        public static void UpdateTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
+        /*public static void UpdateTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
         {
             foreach (var kv in LcdDisplaysDictionary)
             {
@@ -100,22 +108,18 @@ namespace ClientPlugin
                 kv.Value.SetValue(Canvas.TopProperty, position.Y);
                 break;
             }
-        }
+        }*/
     
         public static void RemoveTextBox(long entityId)
         {
-            foreach (var kv in LcdDisplaysDictionary)
-            {
-                if (kv.Key != entityId) continue;
-                LcdDisplaysDictionary.Remove(kv.Key);
-                break;
-            }
+            LcdDisplaysDictionary.Remove(entityId);
         }
 
         public static void ClearDisplayList()
         {
             LcdDisplaysDictionary.Clear();
             _parentCanvas.Children.Clear();
+            SpriteDictionary.Clear();
         }
     
         public static void UpdateOutput()
@@ -127,6 +131,22 @@ namespace ClientPlugin
             {
                 _parentCanvas.Children.Add(kv.Value);
             }
+			//now I need to render the sprites
+            foreach (var kv in SpriteDictionary)
+            {
+                var posData = SpriteOutputDictionary[kv.Key];
+                var displayData = kv.Value;
+                //how would I go about doing this.....
+
+                foreach (var sprite in displayData.Item1)
+                {
+                    
+                }
+                
+                
+            }
+			
+				
         }
     
     }
