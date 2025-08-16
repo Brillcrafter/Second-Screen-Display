@@ -4,17 +4,21 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using ClientPlugin.Settings;
 using ClientPlugin.Settings.Layouts;
 using HarmonyLib;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Pfim;
 using Sandbox.Game.World;
 using Sandbox.Graphics.GUI;
 using Sandbox.ModAPI;
+using VRage.Library.Utils;
 using VRage.Plugins;
 using VRage.Utils;
+using VRageRender.ExternalApp;
 using ImageFormat = Pfim.ImageFormat;
 
 
@@ -37,6 +41,8 @@ namespace ClientPlugin
         private bool _prevControlled;
 
         private int _counter;
+        
+        private MyGameRenderComponent _renderComponent;
     
         /*
         what do I need to do?
@@ -66,10 +72,11 @@ namespace ClientPlugin
         {
             Instance = this;
             Instance._settingsGenerator = new SettingsGenerator();
-
+            
             // TODO: Put your one time initialization code here.
             HudLcdPatch.Instance = new HudLcdPatch();
             HarmonyPatcher = new Harmony(Name);
+            HarmonyPatcher.PatchAll(Assembly.GetExecutingAssembly());
             MyLog.Default.Info("Second Screen display Init Complete");
             //here i need to convert all the .dds sprites to .bmp
             LoadSprites();

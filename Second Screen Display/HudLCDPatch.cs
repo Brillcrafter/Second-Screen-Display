@@ -4,12 +4,14 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Controls;
 using HarmonyLib;
+using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces;
 using VRage.Game.GUI.TextPanel;
 using VRage.Utils;
 using VRageMath;
+using VRage.Render11;
 using Color = VRageMath.Color;
 
 namespace ClientPlugin
@@ -26,13 +28,13 @@ namespace ClientPlugin
         private const double TextPosXDefault = -0.98;
         private const double TextPosYDefault = -0.2;
         private const double TextScaleDefault = 0.8;
-    
-        //defaults and Config Format for Sprite Display
+        
         private const string SpriteTag = "spritelcd";
         private const char SpriteDelim = ':';
         private const double SpritePosXDefault = -0.98;
         private const double SpritePosYDefault = -0.2;
         private const double SpriteScaleDefault = 0.8;
+
         
         static HudLcdPatch()
         {
@@ -111,7 +113,7 @@ namespace ClientPlugin
 
             if (___thisTextPanel.CustomData != null && ___thisTextPanel.CustomData.ToLower().Contains(SpriteTag))
             {
-                runOriginal = SpriteCdParser(___thisTextPanel);
+                //runOriginal = SpriteCdParser(___thisTextPanel);
             }
             if (runOriginal)
             {
@@ -265,6 +267,7 @@ namespace ClientPlugin
                     break; // stop processing lines from Custom Data
                 }
             }
+
             SecondWindowInter.AddSpritePositionInter(block.EntityId, positionData);
             return false;
         }

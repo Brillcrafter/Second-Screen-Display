@@ -78,7 +78,7 @@ namespace ClientPlugin
             }
             SpriteDictionary[entityId] = (tempList, spriteList.Item2, spriteList.Item3);
         }
-
+        
         public static void AddSpritePosition(long entityId, (Vector2D, double) posScale)
         {
             SpriteOutputDictionary[entityId] = posScale;
