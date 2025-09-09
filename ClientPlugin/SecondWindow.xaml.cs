@@ -20,9 +20,9 @@ public partial class SecondWindow
     {
         InitializeComponent();
         //I have to do this jank, Space.... packaging is so much more convenient.....
-        var location = "file:///" + AppContext.BaseDirectory + "Plugins/Github/Brillcrafter/Second-Screen-Display/resources";
+        var location = "file:///" + "C:/Users/Bredn/RiderProjects/Second-Screen-Display/ClientPlugin/resources";
         //for pluginhub version, change to "Plugins/Github/Brillcrafter/Second-Screen-Display/resources"
-        //for local testing, change to "Plugins/Local/SecondScreenDisplay/resources"
+        //for local testing, change to "file:///" + "C:/Users/Bredn/RiderProjects/Second-Screen-Display/ClientPlugin/resources";
         location = location.Replace(@"\", "/");
         var customFont = new FontFamily(location+"/#BigBlueTermPlus Nerd Font Mono");
         Title = "Second Screen Display";

@@ -23,8 +23,7 @@ namespace ClientPlugin
     public class Config : INotifyPropertyChanged
     {
         #region Options
-
-        // TODO: Define your configuration options and their default values
+        
         private string baseFontSize = "10";
         private string secondWindowWidth = "1920";
         private string secondWindowHeight = "1080";

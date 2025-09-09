@@ -664,7 +664,10 @@
   <ItemGroup>
     <Content Include="deploy.bat" />
     <Content Include="PluginHub.xml" />
-    <Page Include="SecondWindow.xaml" />
+    <Page Include="SecondWindow.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
