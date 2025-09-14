@@ -66,7 +66,6 @@ namespace ClientPlugin
             {
                 return;
             }
-
             if (!IsLoaded) return;
             if (Instance._counter == 5)
             {
@@ -85,9 +84,7 @@ namespace ClientPlugin
                 }
             }
             else Instance._counter++;
-
         }
-    
 
         // ReSharper disable once UnusedMember.Global
         public void OpenConfigDialog()
@@ -95,11 +92,5 @@ namespace ClientPlugin
             Instance._settingsGenerator.SetLayout<Simple>();
             MyGuiSandbox.AddScreen(Instance._settingsGenerator.Dialog);
         }
-
-        //TODO: Uncomment and use this method to load asset files
-        /*public void LoadAssets(string folder)
-        {
-
-        }*/
     }
 }

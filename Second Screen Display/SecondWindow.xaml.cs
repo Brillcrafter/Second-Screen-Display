@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using VRageMath;
@@ -37,8 +38,15 @@ namespace ClientPlugin
             Content = _parentCanvas;
             int.TryParse(Config.Current.BaseFontSize, out var baseFontSize);
             FontSize = baseFontSize;
+            SizeChanged += WindowSizeChanged; 
             Show();
             Plugin.Instance.IsLoaded = true;
+        }
+
+        private static void WindowSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            _parentCanvas.Width = e.NewSize.Width;
+            _parentCanvas.Height = e.NewSize.Height;
         }
     
         public static void AddTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
