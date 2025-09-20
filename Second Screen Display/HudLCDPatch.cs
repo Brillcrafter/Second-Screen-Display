@@ -28,6 +28,7 @@ namespace ClientPlugin
         const bool textFontShadowDefault = false;
     
         double thisTextScale = textScaleDefault;
+        
     
         static HudLcdPatch()
         {
@@ -168,12 +169,10 @@ namespace ClientPlugin
                     break; // stop processing lines from Custom Data
                 }
             }
-            int.TryParse(Config.Current.SecondWindowWidth, out var secondWindowWidth);
-            int.TryParse(Config.Current.SecondWindowHeight, out var secondWindowHeight);
-            configPos = new Vector2D((configPos.X + 1)/2 * secondWindowWidth, 
-                (1 - (configPos.Y + 1)/2) * secondWindowHeight);
+            configPos = new Vector2D((configPos.X + 1)/2 * Plugin.Instance.RealWindowWidth, 
+                (1 - (configPos.Y + 1)/2) * Plugin.Instance.RealWindowHeight);
             int.TryParse(Config.Current.BaseFontSize, out var baseFontSize);
-            textScale = baseFontSize * textScale;
+            textScale = baseFontSize * textScale ;
             var colour = new System.Windows.Media.Color //why do you have to use your own colour class keeen
             {
                 R = fontColour.R,

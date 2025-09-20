@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,9 +20,9 @@ namespace ClientPlugin
         {
             InitializeComponent();
             //I have to do this jank, Space.... packaging is so much more convenient.....
-            var location = "file:///" + "C:/Users/Bredn/RiderProjects/Second-Screen-Display/ClientPlugin/resources";
-            //for pluginhub version, change to "Plugins/Github/Brillcrafter/Second-Screen-Display/resources"
-            //for local testing, change to "file:///" + "C:/Users/Bredn/RiderProjects/Second-Screen-Display/ClientPlugin/resources";
+            var location = "file:///" + Assembly.GetExecutingAssembly().Location + "/resources";
+            //for pluginhub version, change to "file:///" + Assembly.GetExecutingAssembly().Location + "/resources";
+            //for local testing, change to "file:///" + "C:/Users/Bredn/RiderProjects/Second-Screen-Display/Second Screen Display/resources";
             location = location.Replace(@"\", "/");
             var customFont = new FontFamily(location+"/#BigBlueTermPlus Nerd Font Mono");
             Title = "Second Screen Display";
@@ -47,6 +48,8 @@ namespace ClientPlugin
         {
             _parentCanvas.Width = e.NewSize.Width;
             _parentCanvas.Height = e.NewSize.Height;
+            Plugin.Instance.RealWindowHeight = (int)e.NewSize.Height;
+            Plugin.Instance.RealWindowWidth = (int)e.NewSize.Width;
         }
     
         public static void AddTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)

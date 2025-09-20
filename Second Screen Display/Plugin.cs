@@ -7,6 +7,7 @@ using HarmonyLib;
 using Sandbox.Game.World;
 using Sandbox.Graphics.GUI;
 using Sandbox.ModAPI;
+using VRage.FileSystem;
 using VRage.Plugins;
 using VRage.Utils;
 
@@ -21,6 +22,11 @@ namespace ClientPlugin
         public bool IsLoaded;
         public bool InitPatch;
         public static Harmony HarmonyPatcher { get; private set; }
+        
+        public int RealWindowWidth;
+        public int RealWindowHeight;
+
+        public string FontFilePath;
     
         private bool IsControlled => MyAPIGateway.Session?.LocalHumanPlayer?.Controller?.ControlledEntity is IMyTerminalBlock;
         private bool _prevControlled = false;
@@ -49,7 +55,9 @@ namespace ClientPlugin
             HudLcdPatch.Instance = new HudLcdPatch();
             HarmonyPatcher = new Harmony(Name);
             MyLog.Default.Info("Second Screen display Init Complete");
-        }
+            int.TryParse(Config.Current.SecondWindowWidth, out RealWindowWidth);
+            int.TryParse(Config.Current.SecondWindowHeight, out RealWindowHeight);
+            }
 
         public void Dispose()
         {

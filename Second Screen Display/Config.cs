@@ -12,7 +12,7 @@ namespace ClientPlugin
     {
         #region Options
         
-        private string baseFontSize = "10";
+        private string baseFontSize = "15";
         private string secondWindowWidth = "1920";
         private string secondWindowHeight = "1080";
         #endregion

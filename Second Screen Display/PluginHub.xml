@@ -10,7 +10,7 @@
   <Author>Brillcrafter</Author>
   
   <!-- Optiontooltip to the pluginal tag that adds a  in-game. -->
-  <Tooltip>Allows you to display HudLcd in a seperate window</Tooltip>
+  <Tooltip>Allows you to display HudLcd in a separate window</Tooltip>
 
   <!-- Optional tag that adds a plugin description. If omitted, this will be the same as the Tooltip. 1000 characters max. -->
   <Description>This plugin allows you to move all the HudLcd items into a seperate window that you can do whatever with. 
