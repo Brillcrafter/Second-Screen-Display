@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,8 +21,10 @@ namespace ClientPlugin
         {
             InitializeComponent();
             //I have to do this jank, Space.... packaging is so much more convenient.....
-            var location = "file:///" + Assembly.GetExecutingAssembly().Location + "/resources";
-            //for pluginhub version, change to "file:///" + Assembly.GetExecutingAssembly().Location + "/resources";
+            var assemblyLocation = Assembly.GetEntryAssembly().Location;
+            assemblyLocation = assemblyLocation.Remove(assemblyLocation.LastIndexOf(@"\", StringComparison.Ordinal));
+            assemblyLocation += @"\Legacy\GitHub\Brillcrafter\Second-Screen-Display";
+            var location = "file:///" + assemblyLocation + "/resources";
             //for local testing, change to "file:///" + "C:/Users/Bredn/RiderProjects/Second-Screen-Display/Second Screen Display/resources";
             location = location.Replace(@"\", "/");
             var customFont = new FontFamily(location+"/#BigBlueTermPlus Nerd Font Mono");

@@ -51,7 +51,7 @@ namespace ClientPlugin
             Instance = this;
             Instance._settingsGenerator = new SettingsGenerator();
 
-            // TODO: Put your one time initialization code here.
+            
             HudLcdPatch.Instance = new HudLcdPatch();
             HarmonyPatcher = new Harmony(Name);
             MyLog.Default.Info("Second Screen display Init Complete");
@@ -61,7 +61,6 @@ namespace ClientPlugin
 
         public void Dispose()
         {
-            // TODO: Save state and close resources here, called when the game exits (not guaranteed!)
             // IMPORTANT: Do NOT call harmony.UnpatchAll() here! It may break other plugins.
 
             Instance = null;
@@ -69,7 +68,6 @@ namespace ClientPlugin
 
         public void Update()
         {
-            // TODO: Put your update code here. It is called on every simulation frame!
             if (MyAPIGateway.Multiplayer == null || MySession.Static?.LocalCharacter == null || MyAPIGateway.Session == null)
             {
                 return;
