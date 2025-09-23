@@ -1,20 +1,22 @@
 using ClientPlugin.Settings;
 using ClientPlugin.Settings.Elements;
-using Sandbox.Graphics.GUI;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using VRageMath;
 
 
 namespace ClientPlugin
 {
     public class Config : INotifyPropertyChanged
     {
-        #region Options
+        #region Defaults
         
-        private string baseFontSize = "15";
-        private string secondWindowWidth = "1920";
-        private string secondWindowHeight = "1080";
+        private string _baseFontSize = "15";
+        private string _secondWindowWidth = "1920";
+        private string _secondWindowHeight = "1080";
+        //private float _secondWindowTransparency;
+        private Color _secondWindowBackgroundColor = Color.White;
         #endregion
 
         #region User interface
@@ -25,23 +27,37 @@ namespace ClientPlugin
         [Textbox(description: "Base Font Size")]
         public string BaseFontSize
         {
-            get => baseFontSize;
-            set => SetField(ref baseFontSize, value);
+            get => _baseFontSize;
+            set => SetField(ref _baseFontSize, value);
         }
         
         [Textbox(description: "Second Window Width")]
         public string SecondWindowWidth
         {
-            get => secondWindowWidth;
-            set => SetField(ref secondWindowWidth, value);
+            get => _secondWindowWidth;
+            set => SetField(ref _secondWindowWidth, value);
         }
         
         [Textbox(description: "Second Window Height")]
         public string SecondWindowHeight
         {
-            get => secondWindowHeight;
-            set => SetField(ref secondWindowHeight, value);
+            get => _secondWindowHeight;
+            set => SetField(ref _secondWindowHeight, value);
         }
+
+        [Color(description: "Second Window Background Color")]
+        public Color SecondWindowBackgroundColor
+        {
+            get => _secondWindowBackgroundColor;
+            set => SetField(ref _secondWindowBackgroundColor, value);
+        }
+        
+        /*[Slider(0f, 1f, 0.01f, SliderAttribute.SliderType.Float, description: "Second Window Transparency")]
+        public float SecondWindowTransparency
+        {
+            get => _secondWindowTransparency;
+            set => SetField(ref _secondWindowTransparency, value);
+        }*/
         
         #endregion
 

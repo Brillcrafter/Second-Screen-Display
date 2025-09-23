@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +15,8 @@ namespace ClientPlugin
     
         //this stores the displayed text boxes
         public static Dictionary<long, TextBox> LcdDisplaysDictionary = new Dictionary<long, TextBox>();
+
+        private static Color _colorCache;
     
         public SecondWindow()
         {
@@ -34,6 +35,14 @@ namespace ClientPlugin
             int.TryParse(Config.Current.SecondWindowHeight, out var secondWindowHeight);
             Width = secondWindowWidth;
             Height = secondWindowHeight;
+            var colour = new Color()
+            {
+                R=Config.Current.SecondWindowBackgroundColor.R,
+                G=Config.Current.SecondWindowBackgroundColor.G,
+                B=Config.Current.SecondWindowBackgroundColor.B,
+            };
+            Background = new SolidColorBrush(colour);
+            
             _parentCanvas = new Canvas
             {
                 Width = secondWindowWidth,
@@ -57,8 +66,6 @@ namespace ClientPlugin
     
         public static void AddTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
         {
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
             var textbox = new TextBox
             {
                 Text = text,
@@ -70,13 +77,10 @@ namespace ClientPlugin
             textbox.SetValue(Canvas.LeftProperty, position.X);
             textbox.SetValue(Canvas.TopProperty, position.Y);
             LcdDisplaysDictionary.Add(entityId, textbox);
-            //});
         }
     
         public static void UpdateTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
         {
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
             foreach (var kv in LcdDisplaysDictionary)
             {
                 if (kv.Key != entityId) continue;
@@ -87,7 +91,6 @@ namespace ClientPlugin
                 kv.Value.SetValue(Canvas.TopProperty, position.Y);
                 break;
             }
-            //});
         }
     
         public static void RemoveTextBox(long entityId)
@@ -115,6 +118,19 @@ namespace ClientPlugin
             {
                 _parentCanvas.Children.Add(kv.Value);
             }
+
+            if (_colorCache.R == Config.Current.SecondWindowBackgroundColor.R &&
+                _colorCache.G == Config.Current.SecondWindowBackgroundColor.G &&
+                _colorCache.B == Config.Current.SecondWindowBackgroundColor.B)
+                return;
+
+            _colorCache = new Color()
+            {
+                R = Config.Current.SecondWindowBackgroundColor.R,
+                G = Config.Current.SecondWindowBackgroundColor.G,
+                B = Config.Current.SecondWindowBackgroundColor.B,
+            };
+            SecondWindowThread.WpfWindow.Background = new SolidColorBrush(_colorCache);
         }
     
     }
