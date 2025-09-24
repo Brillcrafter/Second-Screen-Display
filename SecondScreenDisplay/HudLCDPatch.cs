@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Windows.Controls;
@@ -10,13 +11,15 @@ using VRage.Utils;
 using VRageMath;
 using Color = VRageMath.Color;
 
-namespace ClientPlugin
+namespace BrillcrafterSSD
 {
     public class HudLcdPatch
     {
         private const string HudLcdId = "911144486";
     
         public static HudLcdPatch Instance { get; set; }
+        
+        private Dictionary<long, int> _displayedwindow = new Dictionary<long, int>();
 
         // Defaults &  Config Format
         const string configTag = "hudlcd";
@@ -26,10 +29,16 @@ namespace ClientPlugin
         const double textScaleDefault = 0.8;
         const string textFontDefault = "white";
         const bool textFontShadowDefault = false;
+        const string removeFromHudDefault = "remove";
+        const int screenIdDefault = 0;
     
         double thisTextScale = textScaleDefault;
         
-    
+        //Config Format
+        // hudlcd:{PosX}:{PosY}:{Fontsize}:{Colour}:{Shadow}:{Remove}:{ScreenID}
+        //remove = is the display removed, duplicated, or not touched. ignore, duplicate, none
+        //screenID = which window to display it on, 0 indexed
+        
         static HudLcdPatch()
         {
             Instance = new HudLcdPatch();
@@ -74,7 +83,8 @@ namespace ClientPlugin
             //this is called when the hudlcd is closed, so we need to remove it from the list
             var entityId = ___thisTextPanel.EntityId;
             if (!Plugin.Instance.IsLoaded) return true;
-            SecondWindowInter.RemoveTextBoxInter(entityId);
+            WindowThreadsInter.RemoveTextBoxInter(Instance._displayedwindow[entityId],entityId);
+            Instance._displayedwindow.Remove(entityId);
             return true; //still run the origional method
         }
 
@@ -97,26 +107,17 @@ namespace ClientPlugin
             }
 
             var entityId = ___thisTextPanel.EntityId;
-        
-        
-            TextBox currentTextBox = null;
-            foreach (var kv in SecondWindow.LcdDisplaysDictionary)
-            {
-                if (kv.Key == entityId)
-                {
-                    currentTextBox = kv.Value;
-                    break;
-                }
-            }
-
-            bool newLcd = currentTextBox == null;
+            
 
             var configPos = new Vector2D();
             double textScale = 1;
             var fontColour = Color.Black;
+            var screenId = screenIdDefault;
+            var removeoption = removeFromHudDefault;
         
             //currentLcd.thisTextScale = ___thisTextPanel.FontSize;
             // Get config from config string
+            config = config.ToLower();
             var lines = config.Split('\n');
             foreach (var line in lines)
             {
@@ -125,7 +126,7 @@ namespace ClientPlugin
                     var rawconf =
                         line.Substring(line.IndexOf(configTag))
                             .Split(configDelim); // remove everything before hudlcd in the string.
-                    for (int i = 0; i < 6; i++)
+                    for (int i = 0; i < 8; i++)
                     {
                         if (rawconf.Length > i && rawconf[i].Trim() != "") // Set values from Config Line
                         {
@@ -141,6 +142,12 @@ namespace ClientPlugin
                                     break;
                                 case 3:
                                     textScale = Trygetdouble(rawconf[i], textScaleDefault);
+                                    break;
+                                case 6:
+                                    //removed or not
+                                    break;
+                                case 7:
+                                    int.TryParse(rawconf[i], out screenId);
                                     break;
                             }
                         }
@@ -163,12 +170,29 @@ namespace ClientPlugin
                                     var fontColourtemp = ___thisTextPanel.GetValueColor("FontColor");
                                     fontColour = fontColourtemp;
                                     break;
+                                case 6:
+                                    //default remove option
+                                    break;
+                                case 7:
+                                    screenId = screenIdDefault;
+                                    break;
                             }
                         }
                     }
                     break; // stop processing lines from Custom Data
                 }
             }
+            TextBox currentTextBox = null;
+            foreach (var kv in WindowsThreadManager.WpfWindows[screenId].LcdDisplaysDictionary)
+            {
+                if (kv.Key == entityId)
+                {
+                    currentTextBox = kv.Value;
+                    break;
+                }
+            }
+            var newLcd = currentTextBox == null;
+            
             configPos = new Vector2D((configPos.X + 1)/2 * Plugin.Instance.RealWindowWidth, 
                 (1 - (configPos.Y + 1)/2) * Plugin.Instance.RealWindowHeight);
             int.TryParse(Config.Current.BaseFontSize, out var baseFontSize);
@@ -180,28 +204,39 @@ namespace ClientPlugin
                 B = fontColour.B,
                 A = fontColour.A
             };
+            if (removeoption == "ignore")
+            {
+                //if we are ignoring it then let original method run
+                return true;
+            }
             var currentLcdText = new StringBuilder();
             ___thisTextPanel.ReadText(currentLcdText, true);
             var currentLcdTextString = currentLcdText.ToString();
-            switch (Plugin.Instance.IsLoaded)
+            if (WindowsThreadManager.WpfWindows.ContainsKey(screenId))
             {
-                case true:
+                if (newLcd)
                 {
-                    if (newLcd)
-                    {
-                        SecondWindowInter.AddTextBoxInter(entityId, textScale, colour, currentLcdTextString, configPos);
-                    }
-                    //now to actually read the stuff from the LCD
-            
-                    SecondWindowInter.UpdateTextBoxInter(entityId, textScale, colour, currentLcdTextString, configPos);
-                    break;
+                    Instance._displayedwindow.Add(entityId, screenId);
+                    WindowThreadsInter.AddTextBoxInter(screenId, entityId, textScale, colour, currentLcdTextString, configPos);
                 }
-                case false:
-                    return true; //run the original method if the window isn't made
+                //now to actually read the stuff from the LCD
+            
+                WindowThreadsInter.UpdateTextBoxInter(screenId, entityId, textScale, colour, currentLcdTextString, configPos);
             }
 
+            switch (removeoption)
+            {
+                default:
+                    __result = false;
+                    return false;
+                case "duplicate":
+                    return true;
+            }
+            /*else
+                //run the original method if the window isn't made
+                return true; 
             __result = false;//stop hudlcd from creating the hudmessage thingy if the window is made
-            return false;
+            return false;*/
 
         }
     

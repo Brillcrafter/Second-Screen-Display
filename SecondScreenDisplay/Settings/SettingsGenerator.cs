@@ -1,14 +1,14 @@
-﻿using ClientPlugin.Settings.Elements;
-using ClientPlugin.Settings.Layouts;
-using Sandbox.Graphics.GUI;
+﻿using Sandbox.Graphics.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using BrillcrafterSSD.Settings.Elements;
+using BrillcrafterSSD.Settings.Layouts;
 
 
-namespace ClientPlugin.Settings
+namespace BrillcrafterSSD.Settings
 {
     internal class AttributeInfo
     {

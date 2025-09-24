@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ClientPlugin.Settings.Elements
+namespace BrillcrafterSSD.Settings.Elements
 {
     internal interface IElement
     {

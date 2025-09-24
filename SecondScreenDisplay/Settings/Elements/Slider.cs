@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using VRage.Utils;
 
-namespace ClientPlugin.Settings.Elements
+namespace BrillcrafterSSD.Settings.Elements
 {
     internal class SliderAttribute : Attribute, IElement
     {

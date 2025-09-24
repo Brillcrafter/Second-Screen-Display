@@ -4,14 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using ClientPlugin.Settings.Tools;
+using BrillcrafterSSD.Settings.Tools;
 using VRage.Game;
 using VRage.Input;
 using VRage.Utils;
 using VRage;
 using VRageMath;
 
-namespace ClientPlugin.Settings.Elements
+namespace BrillcrafterSSD.Settings.Elements
 {
     internal class KeybindAttribute : Attribute, IElement
     {

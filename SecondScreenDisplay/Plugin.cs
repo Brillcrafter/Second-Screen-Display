@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ClientPlugin.Settings;
-using ClientPlugin.Settings.Layouts;
+using BrillcrafterSSD.Settings;
+using BrillcrafterSSD.Settings.Layouts;
 using HarmonyLib;
 using Sandbox.Game.World;
 using Sandbox.Graphics.GUI;
@@ -11,7 +11,7 @@ using VRage.FileSystem;
 using VRage.Plugins;
 using VRage.Utils;
 
-namespace ClientPlugin
+namespace BrillcrafterSSD
 {
     // ReSharper disable once UnusedType.Global
     public class Plugin: IPlugin
@@ -25,9 +25,7 @@ namespace ClientPlugin
         
         public int RealWindowWidth;
         public int RealWindowHeight;
-
-        public string FontFilePath;
-    
+        
         private bool IsControlled => MyAPIGateway.Session?.LocalHumanPlayer?.Controller?.ControlledEntity is IMyTerminalBlock;
         private bool _prevControlled = false;
 
@@ -79,13 +77,13 @@ namespace ClientPlugin
                 if (Instance.IsControlled)
                 {
                     Instance._prevControlled = true;
-                    SecondWindowInter.UpdateDisplayInter();
+                    WindowThreadsInter.UpdateDisplayInter();
                     //send the call to update the second window output
                 }
                 else if (Instance._prevControlled && !Instance.IsControlled)
                 {
                     Instance._prevControlled = false;
-                    SecondWindowInter.ClearDisplayListInter();
+                    WindowThreadsInter.ClearDisplayListInter();
                     //send the call to clear the second window output
                 }
             }

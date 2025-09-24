@@ -1,11 +1,11 @@
 ﻿using Sandbox.Graphics.GUI;
 using System;
 using System.Collections.Generic;
-using ClientPlugin.Settings.Tools;
+using BrillcrafterSSD.Settings.Tools;
 using VRage.Game;
 using VRageMath;
 
-namespace ClientPlugin.Settings.Elements
+namespace BrillcrafterSSD.Settings.Elements
 {
     internal class ColorAttribute : Attribute, IElement
     {

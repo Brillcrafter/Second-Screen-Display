@@ -7,20 +7,26 @@ using System.Windows.Media;
 using VRageMath;
 using Color = System.Windows.Media.Color;
 
-namespace ClientPlugin
+namespace BrillcrafterSSD
 {
     public partial class SecondWindow
     {
-        private static Canvas _parentCanvas;
+        private Canvas _parentCanvas;
     
         //this stores the displayed text boxes
-        public static Dictionary<long, TextBox> LcdDisplaysDictionary = new Dictionary<long, TextBox>();
+        public Dictionary<long, TextBox> LcdDisplaysDictionary = new Dictionary<long, TextBox>();
 
-        private static Color _colorCache;
+        private Color _colorCache;
+
+        private int _screenId;
+        
+        public static SecondWindow Instance { get; set; }
     
-        public SecondWindow()
+        public SecondWindow(int screenId)
         {
+            Instance = this;
             InitializeComponent();
+            Instance._screenId = screenId;
             //I have to do this jank, Space.... packaging is so much more convenient.....
             var assemblyLocation = Assembly.GetEntryAssembly().Location;
             assemblyLocation = assemblyLocation.Remove(assemblyLocation.LastIndexOf(@"\", StringComparison.Ordinal));
@@ -53,13 +59,12 @@ namespace ClientPlugin
             FontSize = baseFontSize;
             SizeChanged += WindowSizeChanged; 
             Show();
-            Plugin.Instance.IsLoaded = true;
         }
 
         private static void WindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _parentCanvas.Width = e.NewSize.Width;
-            _parentCanvas.Height = e.NewSize.Height;
+            Instance._parentCanvas.Width = e.NewSize.Width;
+            Instance._parentCanvas.Height = e.NewSize.Height;
             Plugin.Instance.RealWindowHeight = (int)e.NewSize.Height;
             Plugin.Instance.RealWindowWidth = (int)e.NewSize.Width;
         }
@@ -76,12 +81,12 @@ namespace ClientPlugin
             };
             textbox.SetValue(Canvas.LeftProperty, position.X);
             textbox.SetValue(Canvas.TopProperty, position.Y);
-            LcdDisplaysDictionary.Add(entityId, textbox);
+            Instance.LcdDisplaysDictionary.Add(entityId, textbox);
         }
     
         public static void UpdateTextBox(long entityId, double fontsize, Color textColor, string text, Vector2D position)
         {
-            foreach (var kv in LcdDisplaysDictionary)
+            foreach (var kv in Instance.LcdDisplaysDictionary)
             {
                 if (kv.Key != entityId) continue;
                 kv.Value.Text = text;
@@ -95,42 +100,42 @@ namespace ClientPlugin
     
         public static void RemoveTextBox(long entityId)
         {
-            foreach (var kv in LcdDisplaysDictionary)
+            foreach (var kv in Instance.LcdDisplaysDictionary)
             {
                 if (kv.Key != entityId) continue;
-                LcdDisplaysDictionary.Remove(kv.Key);
+                Instance.LcdDisplaysDictionary.Remove(kv.Key);
                 break;
             }
         }
 
         public static void ClearDisplayList()
         {
-            LcdDisplaysDictionary.Clear();
-            _parentCanvas.Children.Clear();
+            Instance.LcdDisplaysDictionary.Clear();
+            Instance._parentCanvas.Children.Clear();
         }
     
         public static void UpdateOutput()
         {
             //called every 10 frames, this is what will update stuff on the second window
             //wish I could do this a smarter way, but i can't think of one
-            _parentCanvas.Children.Clear();
-            foreach (var kv in LcdDisplaysDictionary)
+            Instance._parentCanvas.Children.Clear();
+            foreach (var kv in Instance.LcdDisplaysDictionary)
             {
-                _parentCanvas.Children.Add(kv.Value);
+                Instance._parentCanvas.Children.Add(kv.Value);
             }
 
-            if (_colorCache.R == Config.Current.SecondWindowBackgroundColor.R &&
-                _colorCache.G == Config.Current.SecondWindowBackgroundColor.G &&
-                _colorCache.B == Config.Current.SecondWindowBackgroundColor.B)
+            if (Instance._colorCache.R == Config.Current.SecondWindowBackgroundColor.R &&
+                Instance._colorCache.G == Config.Current.SecondWindowBackgroundColor.G &&
+                Instance._colorCache.B == Config.Current.SecondWindowBackgroundColor.B)
                 return;
 
-            _colorCache = new Color()
+            Instance._colorCache = new Color()
             {
                 R = Config.Current.SecondWindowBackgroundColor.R,
                 G = Config.Current.SecondWindowBackgroundColor.G,
                 B = Config.Current.SecondWindowBackgroundColor.B,
             };
-            SecondWindowThread.WpfWindow.Background = new SolidColorBrush(_colorCache);
+            WindowsThreadManager.WpfWindows[Instance._screenId].Background = new SolidColorBrush(Instance._colorCache);
         }
     
     }

@@ -13,8 +13,14 @@
   <Tooltip>Allows you to display HudLcd in a separate window</Tooltip>
 
   <!-- Optional tag that adds a plugin description. If omitted, this will be the same as the Tooltip. 1000 characters max. -->
-  <Description>This plugin allows you to move all the HudLcd items into a seperate window that you can do whatever with. 
-  To Activate the screen, use the command "/ssd open" and you can close it whenever. </Description>
+  <Description>This plugin allows you to move all the HudLcd items into a separate window that you can do whatever with. 
+  To Activate the screen, use the command "/ssd open" and you can close it whenever. 
+  It defaults to removing the HudLcd display and placing it on the first screen but you can control whether;
+  it removes the display, duplicates it or just ignores it and which screen the HudLcd is put on.
+  You can do this by adding two extra options to the HudLcd config string, resulting in "hudlcd:{PosX}:{PosY}:{Fontsize}:{Colour}:{Shadow}:{Remove}:{ScreenID}"
+  {remove} has 3 options, "remove", "duplicate", "ignore"
+  {ScreenID} is the (integer) ID of the window you want it displayed on.
+  </Description>
   
   <!-- The commit id. You can find this in the commits list-->
   <Commit>96a69a5e1d80303f25ba21eb2e2c08a7dc418741</Commit>

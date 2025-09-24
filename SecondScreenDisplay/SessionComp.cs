@@ -4,7 +4,7 @@ using VRage.Game;
 using VRage.Game.Components;
 using VRage.Utils;
 
-namespace ClientPlugin
+namespace BrillcrafterSSD
 {
     [MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
     public class SessionComp : MySessionComponentBase
@@ -29,7 +29,7 @@ namespace ClientPlugin
                 MyAPIGateway.Utilities.MessageEnteredSender -= HandleCommand;
                 Instance._chatCommandsInit = false;
                 Plugin.Instance.InitPatch = false;
-                if (Plugin.Instance.IsLoaded) SecondWindowInter.ClearDisplayListInter();
+                if (Plugin.Instance.IsLoaded) WindowThreadsInter.ClearDisplayListInter();
             }
             catch (Exception e)
             {
@@ -47,10 +47,21 @@ namespace ClientPlugin
             if (MessageText.ToLower().StartsWith("/ssd"))
             {
                 sendToOthers = false;
-                var text = MessageText.Split(' ')[1];
-                if (text == "open" && !Plugin.Instance.IsLoaded)
+                var messageSplit = MessageText.Split(' ');
+                var layer1 = messageSplit[1];
+                
+                if (layer1 == "open" && !Plugin.Instance.IsLoaded)
                 {
-                    SecondWindowThread.CreateThread();
+                    if (messageSplit.Length > 2)
+                    {
+                        var layer2 = messageSplit[2];
+                        WindowsThreadManager.CreateThread(Convert.ToInt32(layer2));
+                    }
+                    else
+                    {
+                        WindowsThreadManager.CreateThread(0);
+                    }
+                    //SecondWindowThread.CreateThread();
                 }
             }
         }

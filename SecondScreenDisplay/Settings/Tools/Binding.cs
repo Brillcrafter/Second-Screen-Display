@@ -1,6 +1,6 @@
 using VRage.Input;
 
-namespace ClientPlugin.Settings.Tools
+namespace BrillcrafterSSD.Settings.Tools
 {
     public struct Binding
     {

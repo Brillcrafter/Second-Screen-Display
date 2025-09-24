@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ClientPlugin.Settings.Elements;
+using BrillcrafterSSD.Settings.Elements;
 using VRage.Utils;
 using VRageMath;
 
-namespace ClientPlugin.Settings.Layouts
+namespace BrillcrafterSSD.Settings.Layouts
 {
     internal class Simple : Layout
     {

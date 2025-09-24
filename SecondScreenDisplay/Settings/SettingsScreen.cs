@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using VRageMath;
 
-namespace ClientPlugin.Settings
+namespace BrillcrafterSSD.Settings
 {
     internal class SettingsScreen : MyGuiScreenBase
     {

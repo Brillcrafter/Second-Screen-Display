@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientPlugin", "SecondScreenDisplay\ClientPlugin.csproj", "{A3F05ADB-6250-46A4-958D-64E1F11CB406}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrillcrafterSSD", "SecondScreenDisplay\BrillcrafterSSD.csproj", "{A3F05ADB-6250-46A4-958D-64E1F11CB406}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,12 +1,12 @@
-using ClientPlugin.Settings;
-using ClientPlugin.Settings.Elements;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using BrillcrafterSSD.Settings;
+using BrillcrafterSSD.Settings.Elements;
 using VRageMath;
 
 
-namespace ClientPlugin
+namespace BrillcrafterSSD
 {
     public class Config : INotifyPropertyChanged
     {

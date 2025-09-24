@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace ClientPlugin.Settings.Elements
+namespace BrillcrafterSSD.Settings.Elements
 {
     internal class DropdownAttribute : Attribute, IElement
     {
