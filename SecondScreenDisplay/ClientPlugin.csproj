@@ -639,7 +639,7 @@
     <Compile Include="HudLCDPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SecondWindow.xaml.cs" />
+    <Compile Include="resources\SecondWindow.xaml.cs" />
     <Compile Include="SecondWindowInter.cs" />
     <Compile Include="SecondWindowThread.cs" />
     <Compile Include="SessionComp.cs" />
@@ -663,10 +663,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="PluginHub.xml" />
-      <Page Include="SecondWindow.xaml">
-          <Generator>MSBuild:Compile</Generator>
-          <SubType>Designer</SubType>
-      </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -676,6 +672,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Lib.Harmony" Version="2.3.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="resources\SecondWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

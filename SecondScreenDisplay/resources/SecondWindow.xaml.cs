@@ -25,7 +25,7 @@ namespace ClientPlugin
             var assemblyLocation = Assembly.GetEntryAssembly().Location;
             assemblyLocation = assemblyLocation.Remove(assemblyLocation.LastIndexOf(@"\", StringComparison.Ordinal));
             assemblyLocation += @"\Legacy\GitHub\Brillcrafter\Second-Screen-Display";
-            var location = "file:///" + assemblyLocation + "/resources";
+            var location = "file:///" + assemblyLocation + "/Assets";
             //for local testing, change to "file:///" + "C:/Users/Bredn/RiderProjects/Second-Screen-Display/Second Screen Display/resources";
             location = location.Replace(@"\", "/");
             var customFont = new FontFamily(location+"/#BigBlueTermPlus Nerd Font Mono");
