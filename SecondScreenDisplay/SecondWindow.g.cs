@@ -54,12 +54,12 @@ namespace ClientPlugin {
             _contentLoaded = true;
 
             //for pluginhub version, change to:
-            //var xamlPath = System.IO.Path.Combine(
-            //AppContext.BaseDirectory, @"Plugins\Github\Brillcrafter\Second-Screen-Display", "SecondWindow.xaml"
-            //    );
+            var xamlPath = System.IO.Path.Combine(
+            AppContext.BaseDirectory, @"Legacy\Github\Brillcrafter\Second-Screen-Display\Assets", "SecondWindow.xaml"
+                );
             //for local testing, change to:
             //var xamlPath = @"C:\Users\Bredn\RiderProjects\Second-Screen-Display\Second Screen Display\SecondWindow.xaml";
-            var xamlPath = @"C:\Users\Bredn\RiderProjects\Second-Screen-Display\Second Screen Display\SecondWindow.xaml";
+            //var xamlPath = @"C:\Users\Bredn\RiderProjects\Second-Screen-Display\Second Screen Display\SecondWindow.xaml";
 
             using var fs = System.IO.File.OpenRead(xamlPath);
             var pc = new System.Windows.Markup.ParserContext
