@@ -113,7 +113,7 @@ namespace BrillcrafterSSD
             double textScale = 1;
             var fontColour = Color.Black;
             var screenId = screenIdDefault;
-            var removeoption = removeFromHudDefault;
+            var removeOption = removeFromHudDefault;
         
             //currentLcd.thisTextScale = ___thisTextPanel.FontSize;
             // Get config from config string
@@ -126,7 +126,7 @@ namespace BrillcrafterSSD
                     var rawconf =
                         line.Substring(line.IndexOf(configTag))
                             .Split(configDelim); // remove everything before hudlcd in the string.
-                    for (int i = 0; i < 8; i++)
+                    for (var i = 0; i < 8; i++)
                     {
                         if (rawconf.Length > i && rawconf[i].Trim() != "") // Set values from Config Line
                         {
@@ -182,16 +182,11 @@ namespace BrillcrafterSSD
                     break; // stop processing lines from Custom Data
                 }
             }
-            TextBox currentTextBox = null;
-            foreach (var kv in WindowsThreadManager.WpfWindows[screenId].LcdDisplaysDictionary)
+            if (removeOption == "ignore")
             {
-                if (kv.Key == entityId)
-                {
-                    currentTextBox = kv.Value;
-                    break;
-                }
+                //if we are ignoring it then let original method run
+                return true;
             }
-            var newLcd = currentTextBox == null;
             
             configPos = new Vector2D((configPos.X + 1)/2 * Plugin.Instance.RealWindowWidth, 
                 (1 - (configPos.Y + 1)/2) * Plugin.Instance.RealWindowHeight);
@@ -204,27 +199,23 @@ namespace BrillcrafterSSD
                 B = fontColour.B,
                 A = fontColour.A
             };
-            if (removeoption == "ignore")
-            {
-                //if we are ignoring it then let original method run
-                return true;
-            }
+            
             var currentLcdText = new StringBuilder();
             ___thisTextPanel.ReadText(currentLcdText, true);
             var currentLcdTextString = currentLcdText.ToString();
-            if (WindowsThreadManager.WpfWindows.ContainsKey(screenId))
+            
+            if (WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window))
             {
-                if (newLcd)
+                if (!window.LcdDisplaysDictionary.ContainsKey(entityId))
                 {
                     Instance._displayedwindow.Add(entityId, screenId);
                     WindowThreadsInter.AddTextBoxInter(screenId, entityId, textScale, colour, currentLcdTextString, configPos);
                 }
                 //now to actually read the stuff from the LCD
-            
                 WindowThreadsInter.UpdateTextBoxInter(screenId, entityId, textScale, colour, currentLcdTextString, configPos);
             }
 
-            switch (removeoption)
+            switch (removeOption)
             {
                 default:
                     __result = false;
@@ -232,12 +223,6 @@ namespace BrillcrafterSSD
                 case "duplicate":
                     return true;
             }
-            /*else
-                //run the original method if the window isn't made
-                return true; 
-            __result = false;//stop hudlcd from creating the hudmessage thingy if the window is made
-            return false;*/
-
         }
     
         private static double Trygetdouble(string v, double defaultval)
