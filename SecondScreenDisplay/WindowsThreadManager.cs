@@ -18,9 +18,9 @@ namespace BrillcrafterSSD
                 {
                     WpfWindows[id].Dispatcher.Invoke(SecondWindow.ClearDisplayList);
                     WpfWindows[id].Dispatcher.InvokeShutdown(); // Properly shut down the dispatcher
-                    WpfWindows = null;
+                    _wpfThreads.Remove(id);
+                    WpfWindows.Remove(id);
                 };
-
                 // Run the dispatcher loop for the thread (no need for explicit Application)
                 System.Windows.Threading.Dispatcher.Run();
             }));

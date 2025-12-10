@@ -9,35 +9,37 @@ namespace BrillcrafterSSD
         //this is to make sure that it dosen't access a closed window
         public static void AddTextBoxInter(int screenId ,long entityId, double fontsize, Color textColor, string text, Vector2D position)
         {
-            if (!Plugin.Instance.IsLoaded) return;
-            WindowsThreadManager.WpfWindows[screenId].Dispatcher.BeginInvoke(() =>
+            if (WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window))
             {
-                SecondWindow.AddTextBox(entityId, fontsize, textColor, text, position);
-            });
+                window.Dispatcher.BeginInvoke(() =>
+                {
+                    SecondWindow.AddTextBox(entityId, fontsize, textColor, text, position);
+                });
+            }
         
         }
 
         public static void UpdateTextBoxInter(int screenId ,long entityId, double fontsize, Color textColor, string text, Vector2D position)
         {
-            if (!Plugin.Instance.IsLoaded) return;
-            WindowsThreadManager.WpfWindows[screenId].Dispatcher.BeginInvoke(() =>
+            if (WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window))
             {
-                SecondWindow.UpdateTextBox(entityId, fontsize, textColor, text, position);
-            });
+                window.Dispatcher.BeginInvoke(() =>
+                {
+                    SecondWindow.UpdateTextBox(entityId, fontsize, textColor, text, position);
+                });
+            }
         }
 
-        public static void RemoveTextBoxInter(int screenId ,long entityId)
+        public static void RemoveTextBoxInter(int screenId, long entityId)
         {
-            if (!Plugin.Instance.IsLoaded) return;
-            WindowsThreadManager.WpfWindows[screenId].Dispatcher.BeginInvoke(() =>
+            if (WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window))
             {
-                SecondWindow.RemoveTextBox(entityId);
-            });
+                window.Dispatcher.BeginInvoke(() => { SecondWindow.RemoveTextBox(entityId); });
+            }
         }
 
         public static void ClearDisplayListInter()
         {
-            if (!Plugin.Instance.IsLoaded) return;
             foreach (var kv in WindowsThreadManager.WpfWindows)
             {
                 kv.Value.Dispatcher.BeginInvoke(SecondWindow.ClearDisplayList);
@@ -46,13 +48,9 @@ namespace BrillcrafterSSD
 
         public static void UpdateDisplayInter()
         {
-            if (!Plugin.Instance.IsLoaded) return;
             foreach (var kv in WindowsThreadManager.WpfWindows)
             {
-                kv.Value.Dispatcher.BeginInvoke(() =>
-                {
-                    SecondWindow.UpdateOutput();
-                });
+                kv.Value.Dispatcher.BeginInvoke(SecondWindow.UpdateOutput);
             }
         }
     }

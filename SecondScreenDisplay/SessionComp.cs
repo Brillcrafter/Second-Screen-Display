@@ -29,7 +29,7 @@ namespace BrillcrafterSSD
                 MyAPIGateway.Utilities.MessageEnteredSender -= HandleCommand;
                 Instance._chatCommandsInit = false;
                 Plugin.Instance.InitPatch = false;
-                if (Plugin.Instance.IsLoaded) WindowThreadsInter.ClearDisplayListInter();
+                WindowThreadsInter.ClearDisplayListInter();
             }
             catch (Exception e)
             {
@@ -50,7 +50,7 @@ namespace BrillcrafterSSD
                 var messageSplit = MessageText.Split(' ');
                 var layer1 = messageSplit[1];
                 
-                if (layer1 == "open" && !Plugin.Instance.IsLoaded)
+                if (layer1 == "open")
                 {
                     if (messageSplit.Length > 2)
                     {

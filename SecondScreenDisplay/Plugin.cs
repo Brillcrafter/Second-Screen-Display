@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using BrillcrafterSSD.Settings;
+﻿using BrillcrafterSSD.Settings;
 using BrillcrafterSSD.Settings.Layouts;
 using HarmonyLib;
 using Sandbox.Game.World;
 using Sandbox.Graphics.GUI;
 using Sandbox.ModAPI;
-using VRage.FileSystem;
 using VRage.Plugins;
 using VRage.Utils;
 
@@ -19,7 +15,6 @@ namespace BrillcrafterSSD
         public const string Name = "SecondScreenDisplay";
         public static Plugin Instance { get; private set; }
         private SettingsGenerator _settingsGenerator;
-        public bool IsLoaded;
         public bool InitPatch;
         public static Harmony HarmonyPatcher { get; private set; }
         
@@ -27,7 +22,7 @@ namespace BrillcrafterSSD
         public int RealWindowHeight;
         
         private bool IsControlled => MyAPIGateway.Session?.LocalHumanPlayer?.Controller?.ControlledEntity is IMyTerminalBlock;
-        private bool _prevControlled = false;
+        private bool _prevControlled;
 
         private int _counter;
     
@@ -70,7 +65,6 @@ namespace BrillcrafterSSD
             {
                 return;
             }
-            if (!IsLoaded) return;
             if (Instance._counter == 5)
             {
                 Instance._counter = 0;

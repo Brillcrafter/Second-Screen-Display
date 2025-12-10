@@ -77,14 +77,16 @@ namespace BrillcrafterSSD
                 else MyLog.Default.Error("HudLcdPatch: Close method not found");
             }
         }
-
+        
         public static bool OnHudLcdClose(ref IMyTextPanel ___thisTextPanel)
         {
             //this is called when the hudlcd is closed, so we need to remove it from the list
             var entityId = ___thisTextPanel.EntityId;
-            if (!Plugin.Instance.IsLoaded) return true;
-            WindowThreadsInter.RemoveTextBoxInter(Instance._displayedwindow[entityId],entityId);
-            Instance._displayedwindow.Remove(entityId);
+            if (Instance._displayedwindow.TryGetValue(entityId, out var windowId))
+            {
+                WindowThreadsInter.RemoveTextBoxInter(windowId,entityId);
+                Instance._displayedwindow.Remove(entityId);
+            } 
             return true; //still run the origional method
         }
 
@@ -108,7 +110,6 @@ namespace BrillcrafterSSD
 
             var entityId = ___thisTextPanel.EntityId;
             
-
             var configPos = new Vector2D();
             double textScale = 1;
             var fontColour = Color.Black;
@@ -121,66 +122,63 @@ namespace BrillcrafterSSD
             var lines = config.Split('\n');
             foreach (var line in lines)
             {
-                if (line.ToLower().Contains(configTag))
+                if (!line.ToLower().Contains(configTag)) continue;
+                var rawConf = line.Substring(line.IndexOf(configTag)).Split(configDelim); 
+                    // remove everything before hudlcd in the string.
+                for (var i = 0; i < 8; i++)
                 {
-                    var rawconf =
-                        line.Substring(line.IndexOf(configTag))
-                            .Split(configDelim); // remove everything before hudlcd in the string.
-                    for (var i = 0; i < 8; i++)
+                    if (rawConf.Length > i && rawConf[i].Trim() != "") // Set values from Config Line
                     {
-                        if (rawconf.Length > i && rawconf[i].Trim() != "") // Set values from Config Line
+                        switch (i)
                         {
-                            switch (i)
-                            {
-                                case 0:
-                                    break;
-                                case 1:
-                                    configPos.X = Trygetdouble(rawconf[i], textPosXDefault);
-                                    break;
-                                case 2:
-                                    configPos.Y = Trygetdouble(rawconf[i], textPosYDefault);
-                                    break;
-                                case 3:
-                                    textScale = Trygetdouble(rawconf[i], textScaleDefault);
-                                    break;
-                                case 6:
-                                    //removed or not
-                                    break;
-                                case 7:
-                                    int.TryParse(rawconf[i], out screenId);
-                                    break;
-                            }
-                        }
-                        else // Set Default Values
-                        {
-                            switch (i)
-                            {
-                                case 0:
-                                    break;
-                                case 1:
-                                    configPos.X = textPosXDefault;
-                                    break;
-                                case 2:
-                                    configPos.Y = textPosYDefault;
-                                    break;
-                                case 3:
-                                    textScale = ___thisTextPanel.FontSize;
-                                    break;
-                                case 4:
-                                    var fontColourtemp = ___thisTextPanel.GetValueColor("FontColor");
-                                    fontColour = fontColourtemp;
-                                    break;
-                                case 6:
-                                    //default remove option
-                                    break;
-                                case 7:
-                                    screenId = screenIdDefault;
-                                    break;
-                            }
+                            case 0:
+                                break;
+                            case 1:
+                                configPos.X = Trygetdouble(rawConf[i], textPosXDefault);
+                                break;
+                            case 2:
+                                configPos.Y = Trygetdouble(rawConf[i], textPosYDefault);
+                                break;
+                            case 3:
+                                textScale = Trygetdouble(rawConf[i], textScaleDefault);
+                                break;
+                            case 6:
+                                removeOption = rawConf[i];
+                                break;
+                            case 7:
+                                int.TryParse(rawConf[i], out screenId);
+                                break;
                         }
                     }
-                    break; // stop processing lines from Custom Data
+                    else // Set Default Values
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                break;
+                            case 1:
+                                configPos.X = textPosXDefault;
+                                break;
+                            case 2:
+                                configPos.Y = textPosYDefault;
+                                break;
+                            case 3:
+                                textScale = ___thisTextPanel.FontSize;
+                                break;
+                            case 4:
+                                var fontColourtemp = ___thisTextPanel.GetValueColor("FontColor");
+                                fontColour = fontColourtemp;
+                                break;
+                            case 6:
+                                //default remove option
+                                break;
+                            case 7:
+                                screenId = screenIdDefault;
+                                break;
+                        }
+                    }
                 }
+                break; // stop processing lines from Custom Data
             }
             if (removeOption == "ignore")
             {
