@@ -11,6 +11,7 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -32,9 +33,30 @@
 
   <!-- ── Avalonia packages ──────────────────────────────────────────── -->
   <ItemGroup>
-    <PackageReference Include="Avalonia"                   Version="11.2.3" />
-    <PackageReference Include="Avalonia.Desktop"           Version="11.2.3" />
-    <PackageReference Include="Avalonia.Themes.Fluent"     Version="11.2.3" />
+      <Reference Include="Avalonia">
+          <HintPath>resources/Avalonia.dll</HintPath>
+          <Private>True</Private>
+      </Reference>
+      <Reference Include="Avalonia.Controls">
+          <HintPath>resources/Avalonia.Controls.dll</HintPath>
+          <Private>True</Private>
+      </Reference>
+      <Reference Include="Avalonia.Base">
+          <HintPath>resources/Avalonia.Base.dll</HintPath>
+          <Private>True</Private>
+      </Reference>
+      <Reference Include="Avalonia.Markup.Xaml">
+          <HintPath>resources/Avalonia.Markup.Xaml.dll</HintPath>
+          <Private>True</Private>
+      </Reference>
+      <Reference Include="Avalonia.Themes.Fluent">
+          <HintPath>resources/Avalonia.Themes.Fluent.dll</HintPath>
+          <Private>True</Private>
+      </Reference>
+      <Reference Include="Avalonia.Desktop">
+          <HintPath>resources/Avalonia.Desktop.dll</HintPath>
+          <Private>True</Private>
+      </Reference>
     <PackageReference Include="Lib.Harmony"                Version="2.3.6"  />
   </ItemGroup>
 
