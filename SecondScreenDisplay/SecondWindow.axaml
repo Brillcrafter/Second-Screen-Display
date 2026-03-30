@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="BrillcrafterSSD.SecondWindow"
+        Title="Second Screen Display"
+        Width="1920" Height="1080"
+        Background="Black"
+        WindowStartupLocation="Manual">
+
+    <!--
+        A plain Canvas is used so text blocks can be placed at arbitrary
+        pixel coordinates, mirroring the original WPF layout.
+    -->
+    <Canvas x:Name="DisplayCanvas"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch" />
+
+</Window>

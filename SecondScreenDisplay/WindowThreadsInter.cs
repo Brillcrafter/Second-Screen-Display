@@ -1,56 +1,64 @@
-﻿using System.Windows.Threading;
+using Avalonia.Threading;
 using VRageMath;
-using Color = System.Windows.Media.Color;
+using AvaloniaColor = Avalonia.Media.Color;
 
 namespace BrillcrafterSSD
 {
-    public class WindowThreadsInter
+    /// <summary>
+    /// Thread-safe bridge between the SE game loop (any thread) and the Avalonia
+    /// UI thread.
+    ///
+    /// WPF original: used window.Dispatcher.BeginInvoke(...) and static methods
+    ///               on SecondWindow (relying on [ThreadStatic] per-STA-thread).
+    /// Avalonia port: all windows share one UI thread, so we use
+    ///               Dispatcher.UIThread.InvokeAsync and call instance methods
+    ///               directly on the captured window reference.
+    /// </summary>
+    public static class WindowThreadsInter
     {
-        //this is to make sure that it dosen't access a closed window
-        public static void AddTextBoxInter(int screenId ,long entityId, double fontsize, Color textColor, string text, Vector2D position)
+        public static void AddTextBoxInter(int screenId, long entityId,
+                                           double fontSize, AvaloniaColor textColor,
+                                           string text, Vector2D position)
         {
-            if (WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window))
-            {
-                window.Dispatcher.BeginInvoke(() =>
-                {
-                    SecondWindow.AddTextBox(entityId, fontsize, textColor, text, position);
-                });
-            }
-        
+            if (!WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window)) return;
+
+            Dispatcher.UIThread.InvokeAsync(() =>
+                window.AddTextBox(entityId, fontSize, textColor, text, position));
         }
 
-        public static void UpdateTextBoxInter(int screenId ,long entityId, double fontsize, Color textColor, string text, Vector2D position)
+        public static void UpdateTextBoxInter(int screenId, long entityId,
+                                              double fontSize, AvaloniaColor textColor,
+                                              string text, Vector2D position)
         {
-            if (WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window))
-            {
-                window.Dispatcher.BeginInvoke(() =>
-                {
-                    SecondWindow.UpdateTextBox(entityId, fontsize, textColor, text, position);
-                });
-            }
+            if (!WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window)) return;
+
+            Dispatcher.UIThread.InvokeAsync(() =>
+                window.UpdateTextBox(entityId, fontSize, textColor, text, position));
         }
 
         public static void RemoveTextBoxInter(int screenId, long entityId)
         {
-            if (WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window))
-            {
-                window.Dispatcher.BeginInvoke(() => { SecondWindow.RemoveTextBox(entityId); });
-            }
+            if (!WindowsThreadManager.WpfWindows.TryGetValue(screenId, out var window)) return;
+
+            Dispatcher.UIThread.InvokeAsync(() => window.RemoveTextBox(entityId));
         }
 
         public static void ClearDisplayListInter()
         {
-            foreach (var kv in WindowsThreadManager.WpfWindows)
+            // Snapshot the values so the foreach isn't affected by concurrent modifications.
+            foreach (var window in WindowsThreadManager.WpfWindows.Values)
             {
-                kv.Value.Dispatcher.BeginInvoke(SecondWindow.ClearDisplayList);
+                var captured = window;
+                Dispatcher.UIThread.InvokeAsync(() => captured.ClearDisplayList());
             }
         }
 
         public static void UpdateDisplayInter()
         {
-            foreach (var kv in WindowsThreadManager.WpfWindows)
+            foreach (var window in WindowsThreadManager.WpfWindows.Values)
             {
-                kv.Value.Dispatcher.BeginInvoke(SecondWindow.UpdateOutput);
+                var captured = window;
+                Dispatcher.UIThread.InvokeAsync(() => captured.UpdateOutput());
             }
         }
     }
