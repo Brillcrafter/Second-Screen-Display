@@ -1,9 +1,10 @@
 using Sandbox.Graphics.GUI;
 using System;
 using System.Collections.Generic;
+using Avalonia.Controls;
 using VRageMath;
 
-namespace ClientPlugin.Settings.Elements
+namespace BrillcrafterSSD.Settings.Elements
 {
     internal class SeparatorAttribute : Attribute, IElement
     {

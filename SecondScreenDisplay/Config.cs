@@ -66,7 +66,7 @@ namespace BrillcrafterSSD
         public static readonly Config Default = new Config();
         public static readonly Config Current = ConfigStorage.Load();
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {

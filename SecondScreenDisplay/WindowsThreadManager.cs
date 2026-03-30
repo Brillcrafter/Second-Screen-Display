@@ -92,7 +92,6 @@ namespace BrillcrafterSSD
                         AppBuilder
                             .Configure<SSDApplication>()
                             .UsePlatformDetect()   // X11 / Wayland on Linux, Win32 on Windows
-                            .WithInterFont()
                             .LogToTrace()
                             .SetupWithoutStarting();
 
