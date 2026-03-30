@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <PluginData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="GitHubPlugin">
   <!-- Place your github repository name here. One repository can only store one plugin.-->
-  <Id>Brillcrafter/Second-Screen-Display</Id>
+  <Id>AnFerrr/Second-Screen-Display-Linux</Id>
   
   <!-- The name of your plugin that will appear in the list. -->
-  <FriendlyName>Second Screen Display</FriendlyName>
+  <FriendlyName>Second Screen Display Linux</FriendlyName>
   
   <!-- The author name that you want to appear in the list. -->
-  <Author>Brillcrafter</Author>
+  <Author>Brillcrafter/(AnFer)</Author>
   
   <!-- Optiontooltip to the pluginal tag that adds a  in-game. -->
   <Tooltip>Allows you to display HudLcd in a separate window</Tooltip>
